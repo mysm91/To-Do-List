@@ -11,6 +11,11 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+ul,
+li {
+  list-style: none;
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -18,7 +23,7 @@ body {
   gap: 100px;
 }
 
-.todo-list-wrapper {
+.todo-section-wrapper {
   width: 450px;
   min-height: 400px;
   background-color: white;
@@ -40,9 +45,120 @@ body {
   border-top-right-radius: 12px;
 }
 
-.done-tasks-wrapper {
+.input-item-wrapper {
+  width: 95%;
+  margin: 10px auto;
+  background-color: #ac87ff;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+#task-input {
+  font-family: "Roboto", sans-serif;
+  width: 75%;
+  height: 30px;
+  padding: 10px;
+  margin-right: 20px;
+  outline: 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #555;
+  color: white;
+  font-size: 16px;
+  transition: 0.8s;
+}
+
+#task-input:focus {
+  border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+#task-input::placeholder {
+  font-family: "Roboto", sans-serif;
+  color: rgba(73, 73, 73, 0.719);
+  transition: 0.8s;
+}
+
+#task-input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.719);
+}
+
+#task-submit {
+  height: 30px;
+  width: 70px;
+  background-color: #555;
+  color: white;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5),
+    inset -5px -5px 5px rgba(29, 29, 29, 0.7),
+    inset 1px 1px 10px rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.8s;
+}
+
+#task-submit:hover {
+  color: black;
+  background-color: rgb(219, 219, 219);
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3),
+    inset -5px -5px 5px rgba(211, 211, 211, 0.7),
+    inset 1px 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+.todo-list-wrapper {
+  width: 95%;
+  margin: 10px auto;
+  padding: 5px;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-item {
+  padding: 10px;
+  background-color: transparent;
+  border: 3px solid #ac87ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.task-title {
+  margin-right: auto;
+}
+
+.edit-task,
+.mark-as-done,
+.delete-task {
+  padding: 8px;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.edit-task {
+  color: black;
+}
+
+.mark-as-done {
+  color: #00e654;
+}
+
+.delete-task {
+  color: #ff0942;
+}
+
+.edit-task:hover,
+.mark-as-done:hover,
+.delete-task:hover {
+  opacity: 0.2;
+}
+
+.done-tasks-section-wrapper {
   width: 450px;
-  min-height: 400px;
+  min-height: 200px;
   background-color: white;
   border-radius: 12px;
 }
