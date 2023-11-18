@@ -1,0 +1,22 @@
+{
+  "toDoItems": [
+    {
+      "title": "test task",
+      "id": 1
+    },
+    {
+      "title": "second task",
+      "id": 2
+    }
+  ],
+  "doneItems": [
+    {
+      "title": "a task which is done",
+      "id": 1
+    },
+    {
+      "title": "another done task",
+      "id": 2
+    }
+  ]
+}
