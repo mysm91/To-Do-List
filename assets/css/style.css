@@ -25,7 +25,7 @@ li {
 
 .todo-section-wrapper {
   width: 450px;
-  min-height: 400px;
+  height: auto;
   background-color: white;
   border-radius: 12px;
 }
@@ -107,17 +107,17 @@ li {
 .todo-list-wrapper {
   width: 95%;
   margin: 10px auto;
-  padding: 5px;
 }
 
-.todo-list {
+.todo-list,
+.done-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .todo-item {
-  padding: 10px;
+  padding: 5px;
   background-color: transparent;
   border: 3px solid #ac87ff;
   border-radius: 8px;
@@ -127,12 +127,20 @@ li {
 
 .task-title {
   margin-right: auto;
+  text-align: justify;
+  padding-right: 10px;
+}
+
+.todo-icon-wrapper {
+  display: flex;
+  flex-direction: row;
 }
 
 .edit-task,
 .mark-as-done,
-.delete-task {
-  padding: 8px;
+.delete-task,
+.undo-task {
+  padding: 13px 5px;
   font-size: 22px;
   cursor: pointer;
   transition: 0.5s;
@@ -140,25 +148,53 @@ li {
 
 .edit-task {
   color: black;
+  position: relative;
+}
+
+.edit-legend,
+.done-task-legend,
+.delete-legend,
+.undo-task-legend {
+  position: absolute;
+  text-align: center;
+  font-size: 10px;
+  top: -9%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(43, 43, 43);
+  color: white;
+  padding: 4px;
+  border-radius: 12px;
+}
+.done-task-legend {
+  text-wrap: nowrap;
 }
 
 .mark-as-done {
   color: #00e654;
+  position: relative;
 }
 
 .delete-task {
   color: #ff0942;
+  position: relative;
+}
+
+.undo-task {
+  color: #ff4820;
+  position: relative;
 }
 
 .edit-task:hover,
 .mark-as-done:hover,
-.delete-task:hover {
-  opacity: 0.2;
+.delete-task:hover,
+.undo-task:hover {
+  color: #ac87ff;
 }
 
 .done-tasks-section-wrapper {
   width: 450px;
-  min-height: 200px;
+  height: auto;
   background-color: white;
   border-radius: 12px;
 }
@@ -177,6 +213,15 @@ li {
   padding: 15px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
+}
+
+.done-item {
+  padding: 5px;
+  background-color: transparent;
+  border: 3px solid #00e654;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 500px) {
