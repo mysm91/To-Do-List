@@ -8,7 +8,7 @@ const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 
 // API URL
-const url = `http://localhost:3000`;
+const url = `http://localhost:3009`;
 
 // CRUD operations
 // GET TASK ITEMS
@@ -28,15 +28,9 @@ const renderToDoTasks = (tasks) => {
     <li class="todo-item">
     <span class="task-title">${title}</span>
     <div class="todo-icon-wrapper" data-id="${id}">
-      <i class="bx bx-edit edit-task">
-        <div class="edit-legend">Edit</div>
-      </i>
-      <i class="bx bx-message-square-check mark-as-done">
-        <div class="done-task-legend">Done</div>
-      </i>
-      <i class="bx bx-message-square-x delete-task delete-todo-task">
-        <div class="delete-legend">Delete</div>
-      </i>
+      <i class="bx bx-edit edit-task" title="Edit task"></i>
+      <i class="bx bx-message-square-check mark-as-done" title="Mark as done"></i>
+      <i class="bx bx-message-square-x delete-task delete-todo-task" title="Delete task"></i>
     </div>
   </li>`;
   }
@@ -57,12 +51,8 @@ const renderDoneTasks = (tasks) => {
     <li class="done-item">
     <span class="task-title">${title}</span>
     <div class="todo-icon-wrapper" data-id="${id}">
-      <i class="bx bx-undo undo-task">
-        <div class="undo-task-legend">Undo</div>
-      </i>
-      <i class="bx bx-message-square-x delete-task delete-done-task">
-        <div class="delete-legend">Delete</div>
-      </i>
+      <i class="bx bx-undo undo-task" title="Mark as undone"></i>
+      <i class="bx bx-message-square-x delete-task delete-done-task" title="Delete task"></i>
     </div>
   </li>`;
   }

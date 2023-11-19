@@ -4,7 +4,7 @@
   "description": "Kaaryar Institute's Front End Advanced Course project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "json-server --watch db.json --port 3009"
   },
   "keywords": [],
   "author": "",

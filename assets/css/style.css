@@ -174,36 +174,14 @@ li {
 
 .edit-task {
   color: black;
-  position: relative;
-}
-
-.edit-legend,
-.done-task-legend,
-.delete-legend,
-.undo-task-legend {
-  position: absolute;
-  text-align: center;
-  font-size: 10px;
-  top: -9%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgb(43, 43, 43);
-  color: white;
-  padding: 4px;
-  border-radius: 12px;
-}
-.done-task-legend {
-  text-wrap: nowrap;
 }
 
 .mark-as-done {
   color: #00e654;
-  position: relative;
 }
 
 .delete-task {
   color: #ff0942;
-  position: relative;
 }
 
 .undo-task {
