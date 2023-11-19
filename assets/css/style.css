@@ -55,10 +55,10 @@ li {
 
 #task-input {
   font-family: "Roboto", sans-serif;
-  width: 75%;
+  width: 62%;
   height: 30px;
   padding: 10px;
-  margin-right: 20px;
+  /* margin-right: 20px; */
   outline: 0;
   background-color: transparent;
   border: none;
@@ -82,9 +82,10 @@ li {
   color: rgba(255, 255, 255, 0.719);
 }
 
-#task-submit {
+#task-submit,
+#task-edit,
+#task-edit-cancel {
   height: 30px;
-  width: 70px;
   background-color: #555;
   color: white;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5),
@@ -95,8 +96,25 @@ li {
   cursor: pointer;
   transition: 0.8s;
 }
+#task-submit {
+  width: 70px;
+  margin-left: 40px;
+}
 
-#task-submit:hover {
+#task-edit,
+#task-edit-cancel {
+  width: 60px;
+  display: none;
+}
+
+#task-edit {
+  margin-right: 5px;
+  margin-left: 20px;
+}
+
+#task-submit:hover,
+#task-edit:hover,
+#task-edit-cancel:hover {
   color: black;
   background-color: rgb(219, 219, 219);
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3),
@@ -128,7 +146,15 @@ li {
 .task-title {
   margin-right: auto;
   text-align: justify;
-  padding-right: 10px;
+  word-wrap: break-word;
+}
+
+.todo-item > .task-title {
+  width: 300px;
+}
+
+.done-item > .task-title {
+  width: 330px;
 }
 
 .todo-icon-wrapper {

@@ -1,26 +1,4 @@
 {
-  "toDoItems": [
-    {
-      "title": "Hi",
-      "id": 1
-    },
-    {
-      "title": "salam",
-      "id": 2
-    },
-    {
-      "title": "ok",
-      "id": 3
-    }
-  ],
-  "doneItems": [
-    {
-      "title": "a task which is done",
-      "id": 1
-    },
-    {
-      "title": "another done task",
-      "id": 2
-    }
-  ]
+  "toDoItems": [],
+  "doneItems": []
 }
