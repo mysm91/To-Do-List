@@ -9,13 +9,13 @@ const url = `http://localhost:3000`;
 
 // CRUD
 
-// Get items
+// Get task items
 // Get toDo items from the API
 const getToDoTasks = async () => {
   const response = await fetch(url + "/toDoItems");
   const tasks = await response.json();
   renderToDoTasks(tasks);
-  taskInput.focus(); // Input be focused as the page loads
+  resetInput();
 };
 
 // Render tasks which are not done yet
@@ -64,6 +64,43 @@ const renderDoneTasks = (tasks) => {
   }
 };
 
+// CREATE TASK ITEM
+// Create task function
+const createTask = async (task) => {
+  const response = await fetch(url + "/toDoItems", {
+    method: "POST",
+    body: JSON.stringify(task),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+// Create task event
+submitButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  const taskTitle = taskInput.value.trim();
+
+  const taskData = {
+    title: taskTitle,
+  };
+  // Input validation
+  if (!taskTitle) {
+    alert("Please enter a task title!");
+    resetInput();
+  } else {
+    createTask(taskData);
+    resetInput();
+  }
+});
+
+// Edit item
+
+// Page reset function
+const resetInput = () => {
+  taskInput.value = "";
+  taskInput.focus();
+};
 // Calling functions as the page loads
 getToDoTasks();
 getDoneTasks();
