@@ -6,18 +6,25 @@ const editButton = document.getElementById("task-edit");
 const cancelEditButton = document.getElementById("task-edit-cancel");
 const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
-
+const loaderToDo = document.querySelector(".loader-todo");
+const loaderDone = document.querySelector(".loader-done");
+// _________________________________________________________
 // API URL
 const url = `http://localhost:3009`;
+const toDoSubdirectory = "/toDoItems";
+const doneSubdirectory = "/doneItems";
 
+// _________________________________________________________
 // CRUD operations
 // GET TASK ITEMS
-// Get tasks which are not done yet from the API
-const getToDoTasks = async () => {
-  const response = await fetch(url + "/toDoItems");
+// Get tasks from the API
+
+const getTasks = async (subdirectory) => {
+  const response = await fetch(url + subdirectory);
   const tasks = await response.json();
-  renderToDoTasks(tasks);
-  resetInput();
+  subdirectory === toDoSubdirectory
+    ? renderToDoTasks(tasks)
+    : renderDoneTasks(tasks);
 };
 
 // Render tasks which are not done yet
@@ -36,13 +43,6 @@ const renderToDoTasks = (tasks) => {
   }
 };
 
-// Get tasks which are marked as done from the API
-const getDoneTasks = async () => {
-  const response = await fetch(url + "/doneItems");
-  const tasks = await response.json();
-  renderDoneTasks(tasks);
-};
-
 // Render tasks which are marked as done
 const renderDoneTasks = (tasks) => {
   for (let task of tasks) {
@@ -51,23 +51,23 @@ const renderDoneTasks = (tasks) => {
     <li class="done-item">
     <span class="task-title">${title}</span>
     <div class="todo-icon-wrapper" data-id="${id}">
-      <i class="bx bx-undo undo-task" title="Mark as undone"></i>
+      <i class="bx bx-undo mark-as-undone" title="Mark as undone"></i>
       <i class="bx bx-message-square-x delete-task delete-done-task" title="Delete task"></i>
     </div>
   </li>`;
   }
 };
-// Get a single task which is not done yet from the API
+// Get a single to-do task from the API
 const getToDoTask = async (id) => {
-  const response = await fetch(url + `/toDoItems/${id}`);
+  const response = await fetch(url + `${toDoSubdirectory}/${id}`);
   const task = await response.json();
   taskInput.value = task.title;
 };
-
-// CREATE TASK ITEMS
-// Create task function
-const createTask = async (task) => {
-  const response = await fetch(url + "/toDoItems", {
+// __________________________________________________________
+// CREATE AND MARK AS DONE TASK ITEMS
+// Create or done task function
+const createTask = async (subdirectory, task) => {
+  const response = await fetch(url + subdirectory, {
     method: "POST",
     body: JSON.stringify(task),
     headers: {
@@ -77,8 +77,7 @@ const createTask = async (task) => {
 };
 
 // Create task event
-submitButton.addEventListener("click", (e) => {
-  e.preventDefault();
+submitButton.addEventListener("click", () => {
   const taskTitle = taskInput.value.trim();
 
   const taskData = {
@@ -89,29 +88,22 @@ submitButton.addEventListener("click", (e) => {
     alert("Please enter a task title!");
     resetInput();
   } else {
-    createTask(taskData);
+    createTask(toDoSubdirectory, taskData);
     resetInput();
   }
 });
-
+// __________________________________________________________
 // DELETE AND EDIT TASK ITEMS
-// Delete function for tasks which are not done yet
-const deleteToDoTask = async (id) => {
-  await fetch(url + `/toDoItems/${id}`, {
+// Delete function
+const deleteTask = async (subdirectory, id) => {
+  await fetch(url + `${subdirectory}/${id}`, {
     method: "DELETE",
   });
 };
 
-// Delete function for tasks which are marked as done
-const deleteDoneTask = async (id) => {
-  await fetch(url + `/doneItems/${id}`, {
-    method: "DELETE",
-  });
-};
-
-// Edit function for tasks which are not done yet
+// Edit function
 const editTask = async (id, data) => {
-  const response = await fetch(url + `/toDoItems/${id}`, {
+  const response = await fetch(url + `${toDoSubdirectory}/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
     headers: {
@@ -119,16 +111,20 @@ const editTask = async (id, data) => {
     },
   });
 };
-
+// __________________________________________________________
 // Delete and edit task event
-toDoApp.addEventListener("click", (e) => {
+toDoApp.addEventListener("click", async (e) => {
   const taskId = e.target.parentElement.dataset.id; // getting id from data- attribute
+
+  const taskTitle =
+    e.target.parentElement.parentElement.querySelector(".task-title").innerHTML; // getting task title from the list items child
 
   // Delete task which is not done yet
   if (e.target.classList.contains("delete-todo-task")) {
     const deleteConfirm = confirm("Are you sure to delete this item?");
     if (deleteConfirm) {
-      deleteToDoTask(taskId);
+      // e.target.parentElement.parentElement.remove();
+      deleteTask(toDoSubdirectory, taskId);
     }
   }
 
@@ -136,27 +132,47 @@ toDoApp.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete-done-task")) {
     const deleteConfirm = confirm("Are you sure to delete this item?");
     if (deleteConfirm) {
-      deleteDoneTask(taskId);
+      // e.target.parentElement.parentElement.remove();
+      deleteTask(doneSubdirectory, taskId);
     }
   }
 
-  // Edit task which is not done yet
+  // Mark a task as done
+  if (e.target.classList.contains("mark-as-done")) {
+    const taskData = {
+      title: taskTitle,
+    };
+    // e.target.parentElement.parentElement.remove();
+    await createTask(doneSubdirectory, taskData);
+    await deleteTask(toDoSubdirectory, taskId);
+  }
+
+  // Mark a task as undone
+  if (e.target.classList.contains("mark-as-undone")) {
+    const taskData = {
+      title: taskTitle,
+    };
+    // e.target.parentElement.parentElement.remove();
+    await createTask(toDoSubdirectory, taskData);
+    await deleteTask(doneSubdirectory, taskId);
+  }
+
+  // Edit to-do task
   if (e.target.classList.contains("edit-task")) {
     getToDoTask(taskId);
+    taskInput.focus();
 
     // Hiding submit button and showing edit buttons instead
     submitButton.style.display = "none";
     editButton.style.display = "inline-block";
     cancelEditButton.style.display = "inline-block";
-    // taskInput.style.width = "62%";
-    // editButton.style.width = "60px";
-    // cancelEditButton.style.width = "60px";
 
     editButton.setAttribute("data-edit-id", taskId);
 
     // Edit task event
     editButton.addEventListener("click", () => {
       // Getting data from DOM
+
       const taskTitle = taskInput.value.trim();
 
       // Put received data from DOM in an object
@@ -193,6 +209,24 @@ const resetInput = () => {
   taskInput.focus();
 };
 
-// Calling functions as the page loads
-getToDoTasks();
-getDoneTasks();
+// loading tasks as the page loads or a response is received
+(function initializeTasks() {
+  getTasks(toDoSubdirectory);
+  getTasks(doneSubdirectory);
+  resetInput();
+})();
+
+setTimeout(() => {
+  if (toDoList.offsetHeight > 360) {
+    toDoList.parentElement.style.overflowY = "scroll";
+  }
+  if (doneTasksList.offsetHeight > 360) {
+    doneTasksList.parentElement.style.overflowY = "scroll";
+  }
+  if (toDoList.children.length < 3) {
+    loaderToDo.style.display = "none";
+  }
+  if (doneTasksList.children.length < 3) {
+    loaderDone.style.display = "none";
+  }
+}, 500);

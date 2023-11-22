@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>To-D List</title>
+    <title>To-Do List</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Nanum+Gothic:wght@400;700&family=Roboto+Condensed&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Roboto:wght@100;300;400;500;700;900&display=swap"
       rel="stylesheet"
     />
 
@@ -25,37 +25,45 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
 
     <!-- JavaScript codes -->
-    <script src="./assets/js/app.js" defer></script>
+    <!-- <script src="./assets/js/app.js" defer></script> -->
   </head>
 
   <body>
     <div class="container">
-      <!-- todo section -->
-      <div class="todo-section-wrapper">
-        <h2 class="todo-header">To Do List</h2>
-        <div class="input-item-wrapper">
-          <input
-            type="text"
-            id="task-input"
-            placeholder="Enter task title..."
-            autocomplete="off"
-          />
-          <button type="button" id="task-submit">Submit</button>
-          <button type="button" id="task-edit">Edit</button>
-          <button type="button" id="task-edit-cancel">Cancel</button>
+      <h1 class="app-header">Swift To-Do App</h1>
+      <form class="input-item-wrapper">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Enter task title here..."
+          autocomplete="off"
+        />
+        <button type="submit" id="task-submit">Submit</button>
+        <button type="button" id="task-edit">Edit</button>
+        <button type="button" id="task-edit-cancel">Cancel</button>
+      </form>
+      <div class="tasks-container">
+        <!-- todo section -->
+        <div class="todo-section-wrapper">
+          <h2 class="todo-header">To-Do List</h2>
+          <div class="todo-list-wrapper">
+            <ul class="todo-list">
+              <div class="loader loader-todo"></div>
+            </ul>
+          </div>
         </div>
-        <div class="todo-list-wrapper">
-          <ul class="todo-list"></ul>
-        </div>
-      </div>
 
-      <!-- Done tasks section -->
-      <div class="done-tasks-section-wrapper">
-        <h2 class="done-tasks-header">Done Tasks</h2>
-        <div class="todo-list-wrapper">
-          <ul class="done-list"></ul>
+        <!-- Done tasks section -->
+        <div class="done-tasks-section-wrapper">
+          <h2 class="done-tasks-header">Done Tasks</h2>
+          <div class="done-list-wrapper">
+            <ul class="done-list">
+              <div class="loader loader-done"></div>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
+    <script src="./assets/js/app.js"></script>
   </body>
 </html>

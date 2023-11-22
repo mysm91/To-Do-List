@@ -7,8 +7,14 @@
 }
 
 body {
-  background-color: #d6dee7;
+  height: 100vh;
   font-family: "Roboto", sans-serif;
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.4) 50%
+    ),
+    url(./../images/background.jpg) no-repeat center center / cover;
 }
 
 ul,
@@ -18,52 +24,56 @@ li {
 
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  margin-top: 50px;
-  gap: 100px;
+  align-items: center;
+  padding-top: 10px;
+  gap: 20px;
 }
 
-.todo-section-wrapper {
-  width: 450px;
-  height: auto;
-  background-color: white;
-  border-radius: 12px;
+.app-header {
+  color: azure;
+  font-family: "Black Ops One", sans-serif;
+  text-transform: uppercase;
+  font-size: 45px;
+  animation: color-change 5s infinite;
 }
 
-.todo-header {
-  width: 100%;
-  height: auto;
-  color: white;
-  background: linear-gradient(
-    50deg,
-    rgba(113, 72, 252, 1) 0%,
-    rgba(214, 72, 252, 1) 100%
-  );
-  text-align: center;
-  padding: 15px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+@keyframes color-change {
+  0% {
+    color: rgb(95, 54, 231);
+  }
+  50% {
+    color: rgba(21, 209, 85, 1);
+  }
+  100% {
+    color: rgb(95, 54, 231);
+  }
 }
 
 .input-item-wrapper {
-  width: 95%;
-  margin: 10px auto;
+  width: 40%;
   background-color: #ac87ff;
-  padding: 8px;
+  padding: 16px 12px;
   border-radius: 8px;
+  backdrop-filter: blur(2px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.3)
+  );
 }
 
 #task-input {
   font-family: "Roboto", sans-serif;
-  width: 62%;
+  width: 70%;
   height: 30px;
   padding: 10px;
-  /* margin-right: 20px; */
   outline: 0;
   background-color: transparent;
   border: none;
-  border-bottom: 1px solid #555;
-  color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 1);
+  color: rgb(255, 255, 255);
   font-size: 16px;
   transition: 0.8s;
 }
@@ -74,12 +84,12 @@ li {
 
 #task-input::placeholder {
   font-family: "Roboto", sans-serif;
-  color: rgba(73, 73, 73, 0.719);
+  color: rgba(0, 0, 0, 1);
   transition: 0.8s;
 }
 
 #task-input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.719);
+  color: rgb(255, 255, 255);
 }
 
 #task-submit,
@@ -96,6 +106,7 @@ li {
   cursor: pointer;
   transition: 0.8s;
 }
+
 #task-submit {
   width: 70px;
   margin-left: 40px;
@@ -122,8 +133,47 @@ li {
     inset 1px 1px 10px rgba(0, 0, 0, 0.5);
 }
 
+.tasks-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 100px;
+}
+
+.todo-section-wrapper {
+  width: 450px;
+  height: auto;
+  background-color: white;
+  border-radius: 15px;
+  border: 3px solid rgba(113, 72, 252, 1);
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+}
+
+.todo-header {
+  width: 100%;
+  height: auto;
+  color: white;
+  background: linear-gradient(
+    50deg,
+    rgba(113, 72, 252, 1) 0%,
+    rgba(214, 72, 252, 1) 32%,
+    rgb(95, 54, 231) 132%
+  );
+  text-align: center;
+  padding: 15px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
 .todo-list-wrapper {
   width: 95%;
+  max-height: 360px;
+  overflow: auto;
   margin: 10px auto;
 }
 
@@ -131,6 +181,7 @@ li {
 .done-list {
   display: flex;
   flex-direction: column;
+  margin-right: 5px;
   gap: 10px;
 }
 
@@ -141,16 +192,19 @@ li {
   border-radius: 8px;
   display: flex;
   align-items: center;
+  margin: 0 auto;
 }
 
 .task-title {
   margin-right: auto;
-  text-align: justify;
+  text-align: center;
   word-wrap: break-word;
+  font-size: 19px;
+  color: white;
 }
 
 .todo-item > .task-title {
-  width: 300px;
+  width: 295px;
 }
 
 .done-item > .task-title {
@@ -165,7 +219,7 @@ li {
 .edit-task,
 .mark-as-done,
 .delete-task,
-.undo-task {
+.mark-as-undone {
   padding: 13px 5px;
   font-size: 22px;
   cursor: pointer;
@@ -173,7 +227,7 @@ li {
 }
 
 .edit-task {
-  color: black;
+  color: #cfcfcf;
 }
 
 .mark-as-done {
@@ -184,23 +238,40 @@ li {
   color: #ff0942;
 }
 
-.undo-task {
-  color: #ff4820;
-  position: relative;
+.mark-as-undone {
+  color: #ffc71d;
 }
 
 .edit-task:hover,
 .mark-as-done:hover,
-.delete-task:hover,
-.undo-task:hover {
+.todo-list .delete-task:hover {
   color: #ac87ff;
+}
+
+.done-list .delete-task:hover,
+.mark-as-undone:hover {
+  color: #00e654;
 }
 
 .done-tasks-section-wrapper {
   width: 450px;
   height: auto;
   background-color: white;
-  border-radius: 12px;
+  border-radius: 15px;
+  border: 3px solid rgba(21, 209, 85, 1);
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+}
+
+.done-list-wrapper {
+  width: 95%;
+  max-height: 360px;
+  overflow: auto;
+  margin: 10px auto;
 }
 
 .done-tasks-header {
@@ -228,11 +299,76 @@ li {
   align-items: center;
 }
 
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader {
+  width: 75px;
+  height: 75px;
+  border: 10px solid rgba(221, 53, 87, 0.3);
+  border-top-color: var(--primary-color);
+  margin: 50px auto;
+  border-radius: 50%;
+  animation: 1s loader infinite linear;
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #240c04;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
 @media (max-width: 500px) {
+  body {
+    min-height: auto;
+  }
+
   .container {
-    margin-top: 25px;
     flex-direction: column;
     align-items: center;
+    gap: 35px;
+  }
+
+  .input-item-wrapper {
+    width: 90%;
+  }
+
+  #task-input {
+    width: 63%;
+  }
+
+  .tasks-container {
+    flex-direction: column;
     gap: 25px;
   }
+}
+
+.done-tasks-section-wrapper {
+  margin-bottom: 10px;
 }
