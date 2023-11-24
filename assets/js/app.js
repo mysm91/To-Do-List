@@ -1,13 +1,22 @@
 // Select DOM elements
 const toDoApp = document.querySelector(".container");
+const editModal = document.querySelector(".edit-modal");
+const deleteModal = document.querySelector(".delete-modal");
+const inputForm = document.querySelector(".input-item-wrapper");
+const editForm = document.querySelector(".edit-task-wrapper");
 const taskInput = document.getElementById("task-input");
-const submitButton = document.getElementById("task-submit");
-const editButton = document.getElementById("task-edit");
-const cancelEditButton = document.getElementById("task-edit-cancel");
+const taskEdit = document.getElementById("edit-task-input");
+// const submitButton = document.getElementById("task-submit");
+const editButton = document.querySelector(".submit-edit-button");
+const cancelEditButton = document.querySelector(".cancel-edit-button");
+const deleteButton = document.querySelector(".delete-button");
+const cancelDeleteButton = document.querySelector(".cancel-delete-button");
 const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
-const loaderToDo = document.querySelector(".loader-todo");
-const loaderDone = document.querySelector(".loader-done");
+// const toDoLoader = document.querySelector(".loader-todo");
+// const doneLoader = document.querySelector(".loader-done");
+const noToDo = document.querySelector(".no-todo-task");
+const noDone = document.querySelector(".no-done-task");
 // _________________________________________________________
 // API URL
 const url = `http://localhost:3009`;
@@ -20,11 +29,16 @@ const doneSubdirectory = "/doneItems";
 // Get tasks from the API
 
 const getTasks = async (subdirectory) => {
+  // showToDoLoader();
+  // showDoneLoader();
   const response = await fetch(url + subdirectory);
   const tasks = await response.json();
+  // setTimeout(() => {
   subdirectory === toDoSubdirectory
     ? renderToDoTasks(tasks)
     : renderDoneTasks(tasks);
+  //   hideLoaders();
+  // }, 500); // لودر
 };
 
 // Render tasks which are not done yet
@@ -61,13 +75,13 @@ const renderDoneTasks = (tasks) => {
 const getToDoTask = async (id) => {
   const response = await fetch(url + `${toDoSubdirectory}/${id}`);
   const task = await response.json();
-  taskInput.value = task.title;
+  taskEdit.value = task.title;
 };
 // __________________________________________________________
 // CREATE AND MARK AS DONE TASK ITEMS
 // Create or done task function
 const createTask = async (subdirectory, task) => {
-  const response = await fetch(url + subdirectory, {
+  await fetch(url + subdirectory, {
     method: "POST",
     body: JSON.stringify(task),
     headers: {
@@ -77,7 +91,8 @@ const createTask = async (subdirectory, task) => {
 };
 
 // Create task event
-submitButton.addEventListener("click", () => {
+inputForm.addEventListener("submit", (e) => {
+  e.preventDefault();
   const taskTitle = taskInput.value.trim();
 
   const taskData = {
@@ -103,8 +118,8 @@ const deleteTask = async (subdirectory, id) => {
 
 // Edit function
 const editTask = async (id, data) => {
-  const response = await fetch(url + `${toDoSubdirectory}/${id}`, {
-    method: "PATCH",
+  await fetch(url + `${toDoSubdirectory}/${id}`, {
+    method: "PUT",
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
@@ -117,30 +132,63 @@ toDoApp.addEventListener("click", async (e) => {
   const taskId = e.target.parentElement.dataset.id; // getting id from data- attribute
 
   const taskTitle =
-    e.target.parentElement.parentElement.querySelector(".task-title").innerHTML; // getting task title from the list items child
+    e.target.parentElement.parentElement.querySelector(".task-title"); // getting task title from the list items child
 
   // Delete task which is not done yet
   if (e.target.classList.contains("delete-todo-task")) {
-    const deleteConfirm = confirm("Are you sure to delete this item?");
-    if (deleteConfirm) {
-      // e.target.parentElement.parentElement.remove();
-      deleteTask(toDoSubdirectory, taskId);
-    }
+    deleteModalActions(toDoSubdirectory);
+
+    // deleteModal.style.display = "flex";
+    // deleteButton.addEventListener("click", () => {
+    //   deleteTask(toDoSubdirectory, taskId);
+    // });
+
+    // cancelDeleteButton.addEventListener("click", () => {
+    //   deleteModal.style.display = "none";
+    // });
+
+    // const deleteConfirm = confirm("Are you sure to delete this item?");
+    // if (deleteConfirm) {
+    //   // e.target.parentElement.parentElement.remove();
+    //   deleteTask(toDoSubdirectory, taskId);
+    // }
   }
 
   // Delete task which is marked as done
   if (e.target.classList.contains("delete-done-task")) {
-    const deleteConfirm = confirm("Are you sure to delete this item?");
-    if (deleteConfirm) {
-      // e.target.parentElement.parentElement.remove();
-      deleteTask(doneSubdirectory, taskId);
-    }
+    deleteModalActions(doneSubdirectory);
+
+    // deleteModal.style.display = "flex";
+    // deleteButton.addEventListener("click", () => {
+    //   deleteTask(doneSubdirectory, taskId);
+    // });
+
+    // cancelDeleteButton.addEventListener("click", () => {
+    //   deleteModal.style.display = "none";
+    // });
+
+    // const deleteConfirm = confirm("Are you sure to delete this item?");
+    // if (deleteConfirm) {
+    // e.target.parentElement.parentElement.remove();
+    // deleteTask(doneSubdirectory, taskId);
+    // }
+  }
+
+  function deleteModalActions(subdirectory) {
+    deleteModal.style.display = "flex";
+    deleteButton.addEventListener("click", () => {
+      deleteTask(subdirectory, taskId);
+    });
+
+    cancelDeleteButton.addEventListener("click", () => {
+      deleteModal.style.display = "none";
+    });
   }
 
   // Mark a task as done
   if (e.target.classList.contains("mark-as-done")) {
     const taskData = {
-      title: taskTitle,
+      title: taskTitle.innerHTML,
     };
     // e.target.parentElement.parentElement.remove();
     await createTask(doneSubdirectory, taskData);
@@ -150,56 +198,80 @@ toDoApp.addEventListener("click", async (e) => {
   // Mark a task as undone
   if (e.target.classList.contains("mark-as-undone")) {
     const taskData = {
-      title: taskTitle,
+      title: taskTitle.innerHTML,
     };
     // e.target.parentElement.parentElement.remove();
     await createTask(toDoSubdirectory, taskData);
     await deleteTask(doneSubdirectory, taskId);
   }
 
-  // Edit to-do task
+  // Edit task
   if (e.target.classList.contains("edit-task")) {
     getToDoTask(taskId);
-    taskInput.focus();
+    editModal.style.display = "flex";
+    taskEdit.focus();
 
     // Hiding submit button and showing edit buttons instead
-    submitButton.style.display = "none";
-    editButton.style.display = "inline-block";
-    cancelEditButton.style.display = "inline-block";
+    // submitButton.style.display = "none";
+    // editButton.style.display = "inline-block";
+    // cancelEditButton.style.display = "inline-block";
 
-    editButton.setAttribute("data-edit-id", taskId);
+    editButton.setAttribute("data-edit-id", taskId); //???
 
     // Edit task event
-    editButton.addEventListener("click", () => {
+    editForm.addEventListener("submit", (e) => {
+      e.preventDefault();
       // Getting data from DOM
 
-      const taskTitle = taskInput.value.trim();
-
-      // Put received data from DOM in an object
-      const taskData = {
-        title: taskTitle,
-      };
+      const editedTaskTitle = taskEdit.value.trim();
 
       // Edit task validation
-      if (!taskTitle) {
+      if (!editedTaskTitle) {
         alert("Please enter a task title!");
+        getToDoTask(taskId);
+        taskEdit.focus();
       } else {
+        // Put received data from DOM in an object
+        const taskData = {
+          title: editedTaskTitle,
+        };
         editTask(taskId, taskData);
 
         // Hiding edit button and showing submit button instead
-        submitButton.style.display = "inline-block";
-        editButton.style.display = "none";
-        cancelEditButton.style.display = "none";
+        // submitButton.style.display = "inline-block";
+        // editButton.style.display = "none";
+        // cancelEditButton.style.display = "none";
+        editModal.style.display = "none";
       }
     });
 
     // Canceling edit task event
     cancelEditButton.addEventListener("click", () => {
-      resetInput();
-      submitButton.style.display = "inline-block";
-      editButton.style.display = "none";
-      cancelEditButton.style.display = "none";
+      // resetInput();
+      // submitButton.style.display = "inline-block";
+      // editButton.style.display = "none";
+      // cancelEditButton.style.display = "none";
+      editModal.style.display = "none";
     });
+
+    editModal.addEventListener("keydown", (e) => {
+      const pressedKey = e.key;
+      if (pressedKey === "Escape") {
+        editModal.style.display = "none";
+      }
+    });
+  }
+});
+
+toDoApp.addEventListener("mouseover", (e) => {
+  if (e.target.classList.contains("bx")) {
+    e.target.classList.add("bx-tada");
+  }
+});
+
+toDoApp.addEventListener("mouseout", (e) => {
+  if (e.target.classList.contains("bx")) {
+    e.target.classList.remove("bx-tada");
   }
 });
 
@@ -208,25 +280,78 @@ const resetInput = () => {
   taskInput.value = "";
   taskInput.focus();
 };
+// _________________________________________________________
 
+// _________________________________________________________
 // loading tasks as the page loads or a response is received
 (function initializeTasks() {
   getTasks(toDoSubdirectory);
   getTasks(doneSubdirectory);
   resetInput();
+  // showToDoLoader();
+  // showDoneLoader();
+  // hideLoaders();
+  // listChanges();
 })();
 
+// _________________________________________________________
+// default message for empty list and scroll list if needed
 setTimeout(() => {
-  if (toDoList.offsetHeight > 360) {
-    toDoList.parentElement.style.overflowY = "scroll";
+  // if (toDoList.offsetHeight > 360) {
+  //   toDoList.parentElement.style.overflowY = "scroll";
+  // }
+  // if (doneTasksList.offsetHeight > 360) {
+  //   doneTasksList.parentElement.style.overflowY = "scroll";
+  // }
+  if (toDoList.children.length < 2) {
+    noToDo.style.display = "inline-block";
   }
-  if (doneTasksList.offsetHeight > 360) {
-    doneTasksList.parentElement.style.overflowY = "scroll";
+  if (doneTasksList.children.length < 2) {
+    noDone.style.display = "inline-block";
   }
-  if (toDoList.children.length < 3) {
-    loaderToDo.style.display = "none";
-  }
-  if (doneTasksList.children.length < 3) {
-    loaderDone.style.display = "none";
-  }
-}, 500);
+}, 900);
+
+// function listChanges() {
+//   // if (toDoList.offsetHeight > 360) {
+//   //   toDoList.parentElement.style.overflowY = "scroll";
+//   // }
+//   // if (doneTasksList.offsetHeight > 360) {
+//   //   doneTasksList.parentElement.style.overflowY = "scroll";
+//   // }
+//   if (toDoList.children.length < 2) {
+//     noToDo.style.display = "inline-block";
+//   }
+//   if (doneTasksList.children.length < 2) {
+//     noDone.style.display = "inline-block";
+//   }
+// }
+// _________________________________________________________
+// Show and hide loader functions
+// function showToDoLoader() {
+//   toDoLoader.style.display = "block";
+// }
+
+// function showDoneLoader() {
+//   doneLoader.style.display = "block";
+// }
+
+// function hideLoaders() {
+//   doneLoader.style.display = "none";
+//   toDoLoader.style.display = "none";
+// setTimeout(() => {
+//   doneLoader.style.display = "none";
+//   toDoLoader.style.display = "none";
+// }, 2000);
+// }
+
+// function hideToDoLoader() {
+//   setTimeout(() => {
+//     loaderToDo.style.display = "none";
+//   }, 1000);
+// }
+
+// function hideDoneLoader() {
+//   setTimeout(() => {
+//     loaderDone.style.display = "none";
+//   }, 1000);
+// }

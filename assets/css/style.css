@@ -7,14 +7,13 @@
 }
 
 body {
-  height: 100vh;
   font-family: "Roboto", sans-serif;
   background: linear-gradient(
       180deg,
       rgba(0, 0, 0, 0.4) 0%,
       rgba(0, 0, 0, 0.4) 50%
     ),
-    url(./../images/background.jpg) no-repeat center center / cover;
+    url(./../images/background.jpg) fixed no-repeat center center / cover;
 }
 
 ul,
@@ -23,16 +22,16 @@ li {
 }
 
 .container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   padding-top: 10px;
   gap: 20px;
 }
 
 .app-header {
-  color: azure;
   font-family: "Black Ops One", sans-serif;
   text-transform: uppercase;
   font-size: 45px;
@@ -94,7 +93,11 @@ li {
 
 #task-submit,
 #task-edit,
-#task-edit-cancel {
+#task-edit-cancel,
+.submit-edit-button,
+.cancel-edit-button,
+.delete-button,
+.cancel-delete-button {
   height: 30px;
   background-color: #555;
   color: white;
@@ -104,7 +107,7 @@ li {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: 0.8s;
+  transition: 0.5s;
 }
 
 #task-submit {
@@ -125,12 +128,28 @@ li {
 
 #task-submit:hover,
 #task-edit:hover,
-#task-edit-cancel:hover {
+#task-edit-cancel:hover,
+.submit-edit-button:hover,
+.cancel-edit-button:hover,
+.delete-button:hover,
+.cancel-delete-button:hover {
   color: black;
   background-color: rgb(219, 219, 219);
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3),
     inset -5px -5px 5px rgba(211, 211, 211, 0.7),
     inset 1px 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+#task-submit:active,
+#task-edit:active,
+.submit-edit-button:active,
+.cancel-edit-button:active,
+.delete-button:active,
+.cancel-delete-button:active {
+  background-color: #133d5fed;
+  color: white;
+  box-shadow: none;
+  transition: 0.1s;
 }
 
 .tasks-container {
@@ -143,14 +162,13 @@ li {
 .todo-section-wrapper {
   width: 450px;
   height: auto;
-  background-color: white;
   border-radius: 15px;
   border: 3px solid rgba(113, 72, 252, 1);
   backdrop-filter: blur(10px);
   background: linear-gradient(
     to right bottom,
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0.1)
+    rgba(255, 255, 255, 0.2),
+    rgba(97, 97, 97, 0.4)
   );
 }
 
@@ -172,7 +190,7 @@ li {
 
 .todo-list-wrapper {
   width: 95%;
-  max-height: 360px;
+  max-height: calc(100vh - 270px);
   overflow: auto;
   margin: 10px auto;
 }
@@ -204,11 +222,11 @@ li {
 }
 
 .todo-item > .task-title {
-  width: 295px;
+  width: 285px;
 }
 
 .done-item > .task-title {
-  width: 330px;
+  width: 323px;
 }
 
 .todo-icon-wrapper {
@@ -220,14 +238,17 @@ li {
 .mark-as-done,
 .delete-task,
 .mark-as-undone {
-  padding: 13px 5px;
-  font-size: 22px;
+  padding: 12px 5px;
+  font-size: 24px;
   cursor: pointer;
   transition: 0.5s;
+  /* background-color: rgba(0, 0, 0, 0.418); */
+  /* border-radius: 8px; */
+  /* margin-left: 2px; */
 }
 
 .edit-task {
-  color: #cfcfcf;
+  color: #52b1ff;
 }
 
 .mark-as-done {
@@ -235,14 +256,14 @@ li {
 }
 
 .delete-task {
-  color: #ff0942;
+  color: #ff003c;
 }
 
 .mark-as-undone {
-  color: #ffc71d;
+  color: #ac87ff;
 }
 
-.edit-task:hover,
+/* .edit-task:hover,
 .mark-as-done:hover,
 .todo-list .delete-task:hover {
   color: #ac87ff;
@@ -251,25 +272,24 @@ li {
 .done-list .delete-task:hover,
 .mark-as-undone:hover {
   color: #00e654;
-}
+} */
 
 .done-tasks-section-wrapper {
   width: 450px;
   height: auto;
-  background-color: white;
   border-radius: 15px;
   border: 3px solid rgba(21, 209, 85, 1);
   backdrop-filter: blur(10px);
   background: linear-gradient(
     to right bottom,
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0.1)
+    rgba(255, 255, 255, 0.2),
+    rgba(97, 97, 97, 0.4)
   );
 }
 
 .done-list-wrapper {
   width: 95%;
-  max-height: 360px;
+  max-height: calc(100vh - 270px);
   overflow: auto;
   margin: 10px auto;
 }
@@ -299,6 +319,15 @@ li {
   align-items: center;
 }
 
+.no-task {
+  width: 95%;
+  color: white;
+  font-weight: 200;
+  text-align: center;
+  padding: 25px 0 25px 15px;
+  display: none;
+}
+
 @keyframes loader {
   from {
     transform: rotate(0);
@@ -308,7 +337,8 @@ li {
   }
 }
 
-.loader {
+.loader-todo,
+.loader-done {
   width: 75px;
   height: 75px;
   border: 10px solid rgba(221, 53, 87, 0.3);
@@ -316,7 +346,7 @@ li {
   margin: 50px auto;
   border-radius: 50%;
   animation: 1s loader infinite linear;
-  display: block;
+  display: none;
 }
 
 ::-webkit-scrollbar {
@@ -344,15 +374,109 @@ li {
   background: rgba(255, 255, 255, 0.4);
 }
 
-@media (max-width: 500px) {
-  body {
-    min-height: auto;
-  }
+.edit-modal,
+.delete-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+  background-color: #63636393;
+}
 
+.edit-task-wrapper,
+.delete-task-wrapper {
+  width: 450px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  border-radius: 15px;
+  border: 3px solid #133d5f;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+}
+
+.edit-modal-header,
+.delete-modal-header {
+  width: 100%;
+  height: auto;
+  color: white;
+  background: linear-gradient(50deg, #133d5f 0%, #0d101a 32%, #133d5f 132%);
+  text-align: center;
+  padding: 15px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+#edit-task-input {
+  font-family: "Roboto", sans-serif;
+  width: 90%;
+  height: 40px;
+  padding: 5px 10px;
+  outline: 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 1);
+  font-size: 16px;
+  transition: 0.8s;
+}
+
+#edit-task-input:focus {
+  color: rgb(255, 255, 255);
+  border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+#edit-task-input::placeholder {
+  font-family: "Roboto", sans-serif;
+  color: rgba(0, 0, 0, 1);
+  transition: 0.8s;
+}
+
+#edit-task-input:focus::placeholder {
+  color: rgb(255, 255, 255);
+}
+
+.edit-button-wrapper,
+.delete-button-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.submit-edit-button,
+.cancel-edit-button,
+.delete-button,
+.cancel-delete-button {
+  width: 30%;
+  font-size: 16px;
+}
+
+.delete-modal-message {
+  color: white;
+  font-size: 20px;
+}
+
+@media (max-width: 500px) {
   .container {
+    height: auto;
     flex-direction: column;
     align-items: center;
-    gap: 35px;
+    gap: 22px;
+  }
+
+  .app-header {
+    font-size: 35px;
   }
 
   .input-item-wrapper {
@@ -365,10 +489,15 @@ li {
 
   .tasks-container {
     flex-direction: column;
-    gap: 25px;
+    gap: 22px;
   }
-}
 
-.done-tasks-section-wrapper {
-  margin-bottom: 10px;
+  .done-tasks-section-wrapper {
+    margin-bottom: 10px;
+  }
+
+  .todo-list-wrapper,
+  .done-list-wrapper {
+    max-height: 360px;
+  }
 }

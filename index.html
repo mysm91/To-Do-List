@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
 
     <!-- JavaScript codes -->
-    <!-- <script src="./assets/js/app.js" defer></script> -->
+    <script src="./assets/js/app.js" defer></script>
   </head>
 
   <body>
@@ -39,16 +39,19 @@
           autocomplete="off"
         />
         <button type="submit" id="task-submit">Submit</button>
-        <button type="button" id="task-edit">Edit</button>
-        <button type="button" id="task-edit-cancel">Cancel</button>
+        <!-- <button type="button" id="task-edit">Edit</button>
+        <button type="button" id="task-edit-cancel">Cancel</button> -->
       </form>
       <div class="tasks-container">
         <!-- todo section -->
         <div class="todo-section-wrapper">
           <h2 class="todo-header">To-Do List</h2>
           <div class="todo-list-wrapper">
+            <!-- <div class="loader-todo"></div> -->
             <ul class="todo-list">
-              <div class="loader loader-todo"></div>
+              <i class="no-task no-todo-task">
+                Yod do not have any to-do task at the moment
+              </i>
             </ul>
           </div>
         </div>
@@ -57,13 +60,44 @@
         <div class="done-tasks-section-wrapper">
           <h2 class="done-tasks-header">Done Tasks</h2>
           <div class="done-list-wrapper">
+            <!-- <div class="loader-done"></div> -->
             <ul class="done-list">
-              <div class="loader loader-done"></div>
+              <i class="no-task no-done-task">
+                You do not have any done tasks at the moment.
+              </i>
             </ul>
           </div>
         </div>
       </div>
+      <!-- Edit modal -->
+      <div class="edit-modal">
+        <form class="edit-task-wrapper">
+          <h2 class="edit-modal-header">Edit task</h2>
+          <input
+            type="text"
+            id="edit-task-input"
+            placeholder="Edit task title here..."
+            autocomplete="off"
+          />
+          <div class="edit-button-wrapper">
+            <button type="submit" class="submit-edit-button">Edit task</button>
+            <button type="button" class="cancel-edit-button">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <!-- Delete modal -->
+      <div class="delete-modal">
+        <form class="delete-task-wrapper">
+          <h2 class="delete-modal-header">Delete task</h2>
+          <p class="delete-modal-message">
+            Are you sure to delete the selected task?
+          </p>
+          <div class="delete-button-wrapper">
+            <button type="button" class="delete-button">Yes</button>
+            <button type="button" class="cancel-delete-button">No</button>
+          </div>
+        </form>
+      </div>
     </div>
-    <script src="./assets/js/app.js"></script>
   </body>
 </html>
