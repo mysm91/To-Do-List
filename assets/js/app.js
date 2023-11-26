@@ -6,11 +6,13 @@ const inputForm = document.querySelector(".input-item-wrapper");
 const editForm = document.querySelector(".edit-task-wrapper");
 const taskInput = document.getElementById("task-input");
 const taskEdit = document.getElementById("edit-task-input");
-// const submitButton = document.getElementById("task-submit");
+const deleteAllIToDoTasks = document.querySelector(".delete-all-todo-tasks");
+const deleteAllDoneTasks = document.querySelector(".delete-all-done-tasks");
 const editButton = document.querySelector(".submit-edit-button");
 const cancelEditButton = document.querySelector(".cancel-edit-button");
 const deleteButton = document.querySelector(".delete-button");
 const cancelDeleteButton = document.querySelector(".cancel-delete-button");
+const deleteModalMessage = document.querySelector(".delete-modal-message");
 const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 // const toDoLoader = document.querySelector(".loader-todo");
@@ -39,6 +41,7 @@ const getTasks = async (subdirectory) => {
     : renderDoneTasks(tasks);
   //   hideLoaders();
   // }, 500); // لودر
+  listChecker();
 };
 
 // Render tasks which are not done yet
@@ -77,6 +80,7 @@ const getToDoTask = async (id) => {
   const task = await response.json();
   taskEdit.value = task.title;
 };
+
 // __________________________________________________________
 // CREATE AND MARK AS DONE TASK ITEMS
 // Create or done task function
@@ -109,11 +113,20 @@ inputForm.addEventListener("submit", (e) => {
 });
 // __________________________________________________________
 // DELETE AND EDIT TASK ITEMS
-// Delete function
+// Delete single task function
 const deleteTask = async (subdirectory, id) => {
   await fetch(url + `${subdirectory}/${id}`, {
     method: "DELETE",
   });
+};
+
+// Delete all tasks function
+const deleteAllTasks = async (subdirectory) => {
+  const response = await fetch(url + subdirectory);
+  const tasks = await response.json();
+  for (let task of tasks) {
+    await deleteTask(subdirectory, task.id);
+  }
 };
 
 // Edit function
@@ -136,7 +149,7 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete task which is not done yet
   if (e.target.classList.contains("delete-todo-task")) {
-    deleteModalActions(toDoSubdirectory);
+    deleteSingleTaskModalActions(toDoSubdirectory);
 
     // deleteModal.style.display = "flex";
     // deleteButton.addEventListener("click", () => {
@@ -156,7 +169,7 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete task which is marked as done
   if (e.target.classList.contains("delete-done-task")) {
-    deleteModalActions(doneSubdirectory);
+    deleteSingleTaskModalActions(doneSubdirectory);
 
     // deleteModal.style.display = "flex";
     // deleteButton.addEventListener("click", () => {
@@ -174,10 +187,51 @@ toDoApp.addEventListener("click", async (e) => {
     // }
   }
 
-  function deleteModalActions(subdirectory) {
+  function deleteSingleTaskModalActions(subdirectory) {
+    deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
     deleteModal.style.display = "flex";
     deleteButton.addEventListener("click", () => {
       deleteTask(subdirectory, taskId);
+    });
+
+    cancelDeleteButton.addEventListener("click", () => {
+      deleteModal.style.display = "none";
+    });
+  }
+
+  if (e.target.classList.contains("delete-all-todo-tasks")) {
+    deleteAllTasksModalActions("to-do", toDoSubdirectory);
+
+    // deleteModalMessage.innerHTML = "Are you sure to delete all task?";
+    // deleteModal.style.display = "flex";
+    // deleteButton.addEventListener("click", () => {
+    //   deleteAllTasks(toDoSubdirectory);
+    //   deleteModal.style.display = "none";
+    // });
+    // cancelDeleteButton.addEventListener("click", () => {
+    //   deleteModal.style.display = "none";
+    // });
+  }
+
+  if (e.target.classList.contains("delete-all-done-tasks")) {
+    deleteAllTasksModalActions("done", doneSubdirectory);
+    // deleteModalMessage.innerHTML = "Are you sure to delete all task?";
+    // deleteModal.style.display = "flex";
+    // deleteButton.addEventListener("click", () => {
+    //   deleteAllTasks(doneSubdirectory);
+    //   deleteModal.style.display = "none";
+    // });
+    // cancelDeleteButton.addEventListener("click", () => {
+    //   deleteModal.style.display = "none";
+    // });
+  }
+
+  function deleteAllTasksModalActions(taskType, subdirectory) {
+    deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
+    deleteModal.style.display = "flex";
+    deleteButton.addEventListener("click", () => {
+      deleteAllTasks(subdirectory);
+      deleteModal.style.display = "none";
     });
 
     cancelDeleteButton.addEventListener("click", () => {
@@ -281,6 +335,37 @@ const resetInput = () => {
   taskInput.focus();
 };
 // _________________________________________________________
+// Delete all tasks
+// const deleteAllTasks = async (subdirectory) => {
+//   const response = await fetch(url + subdirectory);
+//   const tasks = await response.json();
+//   for (let task of tasks) {
+//     await deleteTask(subdirectory, task.id);
+//   }
+// };
+// deleteAllIToDoTasks.addEventListener("click", async () => {
+//   deleteModal.style.display = "flex";
+//   deleteButton.addEventListener("click", () => {
+//     deleteAllTasks(toDoSubdirectory);
+//     deleteModal.style.display = "none";
+//   });
+
+//   cancelDeleteButton.addEventListener("click", () => {
+//     deleteModal.style.display = "none";
+//   });
+// });
+
+// deleteAllDoneTasks.addEventListener("click", async () => {
+//   deleteModal.style.display = "flex";
+//   deleteButton.addEventListener("click", () => {
+//     deleteAllTasks(doneSubdirectory);
+//     deleteModal.style.display = "none";
+//   });
+
+//   cancelDeleteButton.addEventListener("click", () => {
+//     deleteModal.style.display = "none";
+//   });
+// });
 
 // _________________________________________________________
 // loading tasks as the page loads or a response is received
@@ -295,21 +380,25 @@ const resetInput = () => {
 })();
 
 // _________________________________________________________
-// default message for empty list and scroll list if needed
-setTimeout(() => {
-  // if (toDoList.offsetHeight > 360) {
-  //   toDoList.parentElement.style.overflowY = "scroll";
-  // }
-  // if (doneTasksList.offsetHeight > 360) {
-  //   doneTasksList.parentElement.style.overflowY = "scroll";
-  // }
-  if (toDoList.children.length < 2) {
-    noToDo.style.display = "inline-block";
+// default list of tasks for to put show 'no task' message and 'delete all' button if needed
+function listChecker() {
+  if (toDoList.children.length > 1) {
+    deleteAllIToDoTasks.style.display = "block";
   }
-  if (doneTasksList.children.length < 2) {
-    noDone.style.display = "inline-block";
+
+  if (doneTasksList.children.length > 1) {
+    deleteAllDoneTasks.style.display = "block";
   }
-}, 900);
+  setTimeout(() => {
+    if (toDoList.children.length < 1) {
+      noToDo.style.display = "inline-block";
+    }
+
+    if (doneTasksList.children.length < 1) {
+      noDone.style.display = "inline-block";
+    }
+  }, 1000);
+}
 
 // function listChanges() {
 //   // if (toDoList.offsetHeight > 360) {
@@ -354,4 +443,4 @@ setTimeout(() => {
 //   setTimeout(() => {
 //     loaderDone.style.display = "none";
 //   }, 1000);
-// }
+// }`
