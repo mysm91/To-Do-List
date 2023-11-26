@@ -207,14 +207,7 @@ li {
   right: 10px;
   padding: 0px 10px;
   display: none;
-  /* display: flex;
-  align-items: center; */
-  /* font-size: 14px; */
 }
-
-/* .bx-x-circle {
-  font-size: 25px;
-} */
 
 .todo-list-wrapper {
   width: 95%;
@@ -266,9 +259,6 @@ li {
   font-size: 24px;
   cursor: pointer;
   transition: 0.5s;
-  /* background-color: rgba(0, 0, 0, 0.418); */
-  /* border-radius: 8px; */
-  /* margin-left: 2px; */
 }
 
 .edit-task {
@@ -286,17 +276,6 @@ li {
 .mark-as-undone {
   color: #ac87ff;
 }
-
-/* .edit-task:hover,
-.mark-as-done:hover,
-.todo-list .delete-task:hover {
-  color: #ac87ff;
-}
-
-.done-list .delete-task:hover,
-.mark-as-undone:hover {
-  color: #00e654;
-} */
 
 .done-tasks-section-wrapper {
   width: 450px;
@@ -349,52 +328,7 @@ li {
   display: none;
 }
 
-/* @keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */
-
-/* .loader-todo,
-.loader-done {
-  width: 75px;
-  height: 75px;
-  border: 10px solid rgba(221, 53, 87, 0.3);
-  border-top-color: var(--primary-color);
-  margin: 50px auto;
-  border-radius: 50%;
-  animation: 1s loader infinite linear;
-  display: none;
-} */
-
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  backdrop-filter: blur(10px);
-  background: linear-gradient(
-    to right bottom,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0.1)
-  );
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.7);
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(0, 0, 0);
-}
-
+/* Edit and Delete modals */
 .edit-modal,
 .delete-modal {
   position: fixed;
@@ -481,6 +415,7 @@ li {
   font-size: 20px;
 }
 
+/* Alert modal */
 .alert-modal {
   position: fixed;
   width: 450px;
@@ -507,6 +442,33 @@ li {
   font-size: 26px;
 }
 
+/* Scroll bar style */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.1)
+  );
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.7);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(0, 0, 0);
+}
+
+/* Responsive design */
 @media (max-width: 500px) {
   .container {
     height: auto;
