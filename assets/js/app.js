@@ -2,6 +2,7 @@
 const toDoApp = document.querySelector(".container");
 const editModal = document.querySelector(".edit-modal");
 const deleteModal = document.querySelector(".delete-modal");
+const alertModal = document.querySelector(".alert-modal");
 const inputForm = document.querySelector(".input-item-wrapper");
 const editForm = document.querySelector(".edit-task-wrapper");
 const taskInput = document.getElementById("task-input");
@@ -24,7 +25,6 @@ const noDone = document.querySelector(".no-done-task");
 const url = `http://localhost:3009`;
 const toDoSubdirectory = "/toDoItems";
 const doneSubdirectory = "/doneItems";
-
 // _________________________________________________________
 // CRUD operations
 // GET TASK ITEMS
@@ -49,9 +49,9 @@ const renderToDoTasks = (tasks) => {
   for (let task of tasks) {
     const { id, title } = task;
     toDoList.innerHTML += `
-    <li class="todo-item">
+    <li class="todo-item d-flex align-center">
     <span class="task-title">${title}</span>
-    <div class="todo-icon-wrapper" data-id="${id}">
+    <div class="todo-icon-wrapper d-flex" data-id="${id}">
       <i class="bx bx-edit edit-task" title="Edit task"></i>
       <i class="bx bx-message-square-check mark-as-done" title="Mark as done"></i>
       <i class="bx bx-message-square-x delete-task delete-todo-task" title="Delete task"></i>
@@ -65,9 +65,9 @@ const renderDoneTasks = (tasks) => {
   for (let task of tasks) {
     const { id, title } = task;
     doneTasksList.innerHTML += `
-    <li class="done-item">
+    <li class="done-item d-flex align-center">
     <span class="task-title">${title}</span>
-    <div class="todo-icon-wrapper" data-id="${id}">
+    <div class="todo-icon-wrapper d-flex" data-id="${id}">
       <i class="bx bx-undo mark-as-undone" title="Mark as undone"></i>
       <i class="bx bx-message-square-x delete-task delete-done-task" title="Delete task"></i>
     </div>
@@ -104,7 +104,7 @@ inputForm.addEventListener("submit", (e) => {
   };
   // Task input validation
   if (!taskTitle) {
-    alert("Please enter a task title!");
+    showAlert();
     resetInput();
   } else {
     createTask(toDoSubdirectory, taskData);
@@ -281,7 +281,7 @@ toDoApp.addEventListener("click", async (e) => {
 
       // Edit task validation
       if (!editedTaskTitle) {
-        alert("Please enter a task title!");
+        showAlert();
         getToDoTask(taskId);
         taskEdit.focus();
       } else {
@@ -398,6 +398,20 @@ function listChecker() {
       noDone.style.display = "inline-block";
     }
   }, 1000);
+}
+
+function showAlert() {
+  alertModal.innerHTML =
+    "<i class='bx bxs-error' ></i><span>Please enter a task title.</span>";
+  alertModal.style.visibility = "visible";
+  alertModal.style.opacity = "1";
+  alertModal.style.transform = "translateY(-140%)";
+
+  setTimeout(() => {
+    alertModal.style.visibility = "hidden";
+    alertModal.style.opacity = "0";
+    alertModal.style.transform = "translateY(0)";
+  }, 3000);
 }
 
 // function listChanges() {

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>To-Do List</title>
+    <title>Sane TO-DO app</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,7 +29,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div class="container d-flex align-center">
       <h1 class="app-header">Swift To-Do App</h1>
       <form class="input-item-wrapper">
         <input
@@ -40,10 +40,10 @@
         />
         <button type="submit" id="task-submit">Submit</button>
       </form>
-      <div class="tasks-container">
+      <div class="tasks-container d-flex justify-center">
         <!-- todo section -->
         <div class="todo-section-wrapper">
-          <div class="todo-header-wrapper">
+          <div class="todo-header-wrapper d-flex align-center">
             <h2 class="header-title">To-Do List</h2>
             <button class="delete-all-tasks delete-all-todo-tasks">
               delete all
@@ -56,13 +56,13 @@
             <i class="no-task no-todo-task">
               Yod do not have any to-do task at the moment
             </i>
-            <ul class="todo-list"></ul>
+            <ul class="todo-list d-flex"></ul>
           </div>
         </div>
 
         <!-- Done tasks section -->
         <div class="done-tasks-section-wrapper">
-          <div class="done-header-wrapper">
+          <div class="done-header-wrapper d-flex align-center">
             <h2 class="header-title">Done Tasks</h2>
             <button class="delete-all-tasks delete-all-done-tasks">
               delete all
@@ -74,13 +74,13 @@
             <i class="no-task no-done-task">
               You do not have any done tasks at the moment.
             </i>
-            <ul class="done-list"></ul>
+            <ul class="done-list d-flex"></ul>
           </div>
         </div>
       </div>
       <!-- Edit modal -->
-      <div class="edit-modal">
-        <form class="edit-task-wrapper">
+      <div class="edit-modal align-center justify-center">
+        <form class="edit-task-wrapper d-flex align-center">
           <h2 class="edit-modal-header">Edit task</h2>
           <input
             type="text"
@@ -88,25 +88,25 @@
             placeholder="Edit task title here..."
             autocomplete="off"
           />
-          <div class="edit-button-wrapper">
+          <div class="edit-button-wrapper d-flex justify-center">
             <button type="submit" class="submit-edit-button">Edit task</button>
             <button type="button" class="cancel-edit-button">Cancel</button>
           </div>
         </form>
       </div>
       <!-- Delete modal -->
-      <div class="delete-modal">
-        <form class="delete-task-wrapper">
+      <div class="delete-modal align-center justify-center">
+        <form class="delete-task-wrapper d-flex align-center">
           <h2 class="delete-modal-header">Delete task</h2>
           <p class="delete-modal-message"></p>
-          <div class="delete-button-wrapper">
+          <div class="delete-button-wrapper d-flex justify-center">
             <button type="button" class="delete-button">Yes</button>
             <button type="button" class="cancel-delete-button">No</button>
           </div>
         </form>
       </div>
       <!-- Alert model -->
-      <div class="alert-modal"></div>
+      <div class="alert-modal d-flex align-center justify-center"></div>
     </div>
   </body>
 </html>

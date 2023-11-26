@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+::selection {
+  color: #fff;
+  background-color: #000;
+}
+
 body {
   font-family: "Roboto", sans-serif;
   background: linear-gradient(
@@ -21,12 +26,22 @@ li {
   list-style: none;
 }
 
+.d-flex {
+  display: flex;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
 .container {
   height: 100vh;
-  display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
   padding-top: 10px;
   gap: 20px;
 }
@@ -146,8 +161,6 @@ li {
 }
 
 .tasks-container {
-  display: flex;
-  justify-content: center;
   align-items: flex-start;
   gap: 100px;
 }
@@ -164,12 +177,11 @@ li {
     rgba(97, 97, 97, 0.4)
   );
 }
+
 .todo-header-wrapper {
   position: relative;
   width: 100%;
   height: 60px;
-  display: flex;
-  align-items: center;
   padding: 15px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -213,7 +225,6 @@ li {
 
 .todo-list,
 .done-list {
-  display: flex;
   flex-direction: column;
   margin-right: 5px;
   gap: 10px;
@@ -224,8 +235,6 @@ li {
   background-color: transparent;
   border: 3px solid #ac87ff;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
   margin: 0 auto;
 }
 
@@ -246,7 +255,6 @@ li {
 }
 
 .todo-icon-wrapper {
-  display: flex;
   flex-direction: row;
 }
 
@@ -314,8 +322,6 @@ li {
   position: relative;
   width: 100%;
   height: 60px;
-  display: flex;
-  align-items: center;
   padding: 15px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -332,8 +338,6 @@ li {
   background-color: transparent;
   border: 3px solid #00e654;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
 }
 
 .no-task {
@@ -374,7 +378,7 @@ li {
   backdrop-filter: blur(10px);
   background: linear-gradient(
     to right bottom,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.2),
     rgba(255, 255, 255, 0.1)
   );
   border-top-right-radius: 12px;
@@ -382,13 +386,13 @@ li {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #240c04;
+  background: rgba(0, 0, 0, 0.7);
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgb(0, 0, 0);
 }
 
 .edit-modal,
@@ -399,9 +403,6 @@ li {
   bottom: 0;
   left: 0;
   display: none;
-  /* display: flex; */
-  justify-content: center;
-  align-items: center;
   background-color: #63636393;
 }
 
@@ -409,9 +410,7 @@ li {
 .delete-task-wrapper {
   width: 450px;
   height: 200px;
-  display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 22px;
   border-radius: 15px;
   border: 3px solid #133d5f;
@@ -466,8 +465,6 @@ li {
 .edit-button-wrapper,
 .delete-button-wrapper {
   width: 100%;
-  display: flex;
-  justify-content: center;
   gap: 20px;
 }
 
@@ -489,14 +486,31 @@ li {
   width: 450px;
   height: 50px;
   border-radius: 15px;
-  background-color: rgb(255, 255, 255);
+  gap: 10px;
+  word-spacing: 3px;
+  font-size: 20px;
+  color: white;
+  backdrop-filter: blur(30px);
+  background: linear-gradient(
+    to right bottom,
+    rgba(255, 0, 0, 0.6),
+    rgba(255, 0, 0, 0.2)
+  );
+  margin-top: 70px;
+  visibility: hidden;
+  opacity: 0;
+  transition: 1s;
+}
+
+.bxs-error {
+  color: yellow;
+  font-size: 26px;
 }
 
 @media (max-width: 500px) {
   .container {
     height: auto;
     flex-direction: column;
-    align-items: center;
     gap: 22px;
   }
 
@@ -505,7 +519,7 @@ li {
   }
 
   .input-item-wrapper {
-    width: 90%;
+    width: 92%;
   }
 
   #task-submit {
