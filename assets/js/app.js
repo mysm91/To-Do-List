@@ -7,13 +7,15 @@ const inputForm = document.querySelector(".input-item-wrapper");
 const editForm = document.querySelector(".edit-task-wrapper");
 const taskInput = document.getElementById("task-input");
 const taskEdit = document.getElementById("edit-task-input");
-const deleteAllIToDoTasks = document.querySelector(".delete-all-todo-tasks");
-const deleteAllDoneTasks = document.querySelector(".delete-all-done-tasks");
+const deleteAllIToDoButton = document.querySelector(".delete-all-todo-tasks");
+const deleteAllDoneButton = document.querySelector(".delete-all-done-tasks");
 const editButton = document.querySelector(".submit-edit-button");
 const cancelEditButton = document.querySelector(".cancel-edit-button");
 const deleteButton = document.querySelector(".delete-button");
 const cancelDeleteButton = document.querySelector(".cancel-delete-button");
 const deleteModalMessage = document.querySelector(".delete-modal-message");
+const toDoListWrapper = document.querySelector(".todo-list-wrapper");
+const doneListWrapper = document.querySelector(".done-list-wrapper");
 const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 const noToDo = document.querySelector(".no-todo-task");
@@ -33,7 +35,8 @@ const getTasks = async (subdirectory) => {
   subdirectory === toDoSubdirectory
     ? renderToDoTasks(tasks)
     : renderDoneTasks(tasks);
-  listChecker();
+  //  ? renderTasks(tasks, toDoList, "todo", "done")
+  // : renderTasks(tasks, doneTasksList, "done", "undone");
 };
 
 // Get a single to-do task from the API
@@ -43,14 +46,29 @@ const getToDoTask = async (id) => {
   taskEdit.value = task.title;
 };
 
-// Render to-do tasks
+// Render tasks
+// const renderTasks = (tasks, DOMTarget, className, taskDestination) => {
+//   for (let task of tasks) {
+//     const { id, title } = task;
+//     DOMTarget.innerHTML += `
+//     <li class="${className}-item d-flex align-center">
+//     <span class="task-title">${title}</span>
+//     <div class="${className}-icon-wrapper d-flex" data-id="${id}">
+//       <i class="bx bx-edit edit-task" title="Edit task"></i>
+//       <i class="bx bx-message-square-check mark-as-${taskDestination}" title="Mark as ${taskDestination}"></i>
+//       <i class="bx bx-message-square-x delete-task delete-${className}-task" title="Delete task"></i>
+//     </div>
+//   </li>`;
+//   }
+// };
+
 const renderToDoTasks = (tasks) => {
   for (let task of tasks) {
     const { id, title } = task;
     toDoList.innerHTML += `
     <li class="todo-item d-flex align-center">
     <span class="task-title">${title}</span>
-    <div class="todo-icon-wrapper d-flex" data-id="${id}">
+    <div class="icon-wrapper d-flex" data-id="${id}">
       <i class="bx bx-edit edit-task" title="Edit task"></i>
       <i class="bx bx-message-square-check mark-as-done" title="Mark as done"></i>
       <i class="bx bx-message-square-x delete-task delete-todo-task" title="Delete task"></i>
@@ -66,7 +84,7 @@ const renderDoneTasks = (tasks) => {
     doneTasksList.innerHTML += `
     <li class="done-item d-flex align-center">
     <span class="task-title">${title}</span>
-    <div class="todo-icon-wrapper d-flex" data-id="${id}">
+    <div class="icon-wrapper d-flex" data-id="${id}">
       <i class="bx bx-undo mark-as-undone" title="Mark as undone"></i>
       <i class="bx bx-message-square-x delete-task delete-done-task" title="Delete task"></i>
     </div>
@@ -87,7 +105,7 @@ const createTask = async (subdirectory, task) => {
 };
 
 // Create task event
-inputForm.addEventListener("submit", (e) => {
+inputForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const taskTitle = taskInput.value.trim();
 
@@ -99,7 +117,7 @@ inputForm.addEventListener("submit", (e) => {
     showAlert();
     resetInput();
   } else {
-    createTask(toDoSubdirectory, taskData);
+    await createTask(toDoSubdirectory, taskData);
     resetInput();
   }
 });
@@ -151,11 +169,12 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete single task modal function
   function deleteSingleTaskModalActions(subdirectory) {
-    deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
     deleteModal.style.display = "flex";
-    // Delete button event
-    deleteButton.addEventListener("click", () => {
-      deleteTask(subdirectory, taskId);
+    deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
+    // Delete single button event
+    deleteButton.addEventListener("click", async () => {
+      await deleteTask(subdirectory, taskId);
+      deleteModal.style.display = "none";
     });
     // Cancel button event
     cancelDeleteButton.addEventListener("click", () => {
@@ -175,12 +194,12 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete all tasks modal function
   function deleteAllTasksModalActions(taskType, subdirectory) {
-    deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
     deleteModal.style.display = "flex";
+    deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
 
-    // Delete button event
-    deleteButton.addEventListener("click", () => {
-      deleteAllTasks(subdirectory);
+    // Delete all button event
+    deleteButton.addEventListener("click", async () => {
+      await deleteAllTasks(subdirectory);
       deleteModal.style.display = "none";
     });
 
@@ -210,13 +229,13 @@ toDoApp.addEventListener("click", async (e) => {
   // _________________________________________________________
   // Edit task
   if (e.target.classList.contains("edit-task")) {
-    getToDoTask(taskId);
+    await getToDoTask(taskId);
     editModal.style.display = "flex";
     taskEdit.focus();
-    editButton.setAttribute("data-edit-id", taskId); //???
+    // editButton.setAttribute("data-edit-id", taskId); //???
 
     // Edit task event
-    editForm.addEventListener("submit", (e) => {
+    editForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       // Getting data from DOM
@@ -225,14 +244,14 @@ toDoApp.addEventListener("click", async (e) => {
       // Edit task validation
       if (!editedTaskTitle) {
         showAlert();
-        getToDoTask(taskId);
+        await getToDoTask(taskId);
         taskEdit.focus();
       } else {
         // Put received data from DOM in an object
         const taskData = {
           title: editedTaskTitle,
         };
-        editTask(taskId, taskData);
+        await editTask(taskId, taskData);
         editModal.style.display = "none";
       }
     });
@@ -288,28 +307,45 @@ function showAlert() {
 }
 // _________________________________________________________
 // default list of tasks for to put show 'no task' message and 'delete all' button if needed
-function listChecker() {
-  if (toDoList.children.length > 1) {
-    deleteAllIToDoTasks.style.display = "block";
+const listChecker = () => {
+  const toDoChildren = toDoList.children.length;
+  const doneChildren = doneTasksList.children.length;
+
+  // Create "no task" message function
+  const renderNoTaskMessage = (taskType, listType) => {
+    const createNoTaskElement = document.createElement("i");
+    const noTaskMessage = `You do not have any ${taskType} tasks at the moment`;
+    createNoTaskElement.innerHTML = noTaskMessage;
+    createNoTaskElement.classList.add("no-task");
+    listType.prepend(createNoTaskElement);
+  };
+
+  // Show/hide "no task" message
+  if (toDoChildren < 1) {
+    renderNoTaskMessage("to-do", toDoListWrapper);
   }
 
-  if (doneTasksList.children.length > 1) {
-    deleteAllDoneTasks.style.display = "block";
+  if (doneChildren < 1) {
+    renderNoTaskMessage("done", doneListWrapper);
   }
-  setTimeout(() => {
-    if (toDoList.children.length < 1) {
-      noToDo.style.display = "inline-block";
-    }
 
-    if (doneTasksList.children.length < 1) {
-      noDone.style.display = "inline-block";
-    }
-  }, 1000);
-}
+  // Show / hide delete all tasks button
+  if (toDoChildren > 1) {
+    deleteAllIToDoButton.style.display = "block";
+  } else {
+    deleteAllIToDoButton.style.display = "none";
+  }
+  if (doneChildren > 1) {
+    deleteAllDoneButton.style.display = "block";
+  } else {
+    deleteAllDoneButton.style.display = "none";
+  }
+};
 // _________________________________________________________
 // Loading tasks as the page loads or a response is received
-(function initializeTasks() {
-  getTasks(toDoSubdirectory);
-  getTasks(doneSubdirectory);
+(async function initializeTasks() {
+  await getTasks(toDoSubdirectory);
+  await getTasks(doneSubdirectory);
+  listChecker();
   resetInput();
 })();

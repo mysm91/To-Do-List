@@ -247,10 +247,6 @@ li {
   width: 323px;
 }
 
-.todo-icon-wrapper {
-  flex-direction: row;
-}
-
 .edit-task,
 .mark-as-done,
 .delete-task,
@@ -320,12 +316,11 @@ li {
 }
 
 .no-task {
-  width: 95%;
+  display: block;
   color: white;
   font-weight: 200;
   text-align: center;
-  padding: 25px 0 25px 15px;
-  display: none;
+  padding: 22px 0;
 }
 
 /* Edit and Delete modals */
