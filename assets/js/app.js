@@ -18,8 +18,6 @@ const toDoListWrapper = document.querySelector(".todo-list-wrapper");
 const doneListWrapper = document.querySelector(".done-list-wrapper");
 const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
-const noToDo = document.querySelector(".no-todo-task");
-const noDone = document.querySelector(".no-done-task");
 // _________________________________________________________
 // API URL
 const url = `http://localhost:3009`;
@@ -37,13 +35,6 @@ const getTasks = async (subdirectory) => {
     : renderDoneTasks(tasks);
   //  ? renderTasks(tasks, toDoList, "todo", "done")
   // : renderTasks(tasks, doneTasksList, "done", "undone");
-};
-
-// Get a single to-do task from the API
-const getToDoTask = async (id) => {
-  const response = await fetch(url + `${toDoSubdirectory}/${id}`);
-  const task = await response.json();
-  taskEdit.value = task.title;
 };
 
 // Render tasks
@@ -91,6 +82,13 @@ const renderDoneTasks = (tasks) => {
   </li>`;
   }
 };
+
+// Get a single to-do task from the API
+const getToDoTask = async (id) => {
+  const response = await fetch(url + `${toDoSubdirectory}/${id}`);
+  const task = await response.json();
+  taskEdit.value = task.title;
+};
 // __________________________________________________________
 // CREATE AND MARK AS DONE TASK ITEMS
 // Create task / mark task as done function
@@ -108,10 +106,10 @@ const createTask = async (subdirectory, task) => {
 inputForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const taskTitle = taskInput.value.trim();
-
   const taskData = {
     title: taskTitle,
   };
+
   // Task input validation
   if (!taskTitle) {
     showAlert();
@@ -122,7 +120,7 @@ inputForm.addEventListener("submit", async (e) => {
   }
 });
 // __________________________________________________________
-// DELETE AND EDIT TASK ITEMS
+// DELETE, EDIT, AND DONE/UNDONE TASK ITEMS
 // Delete single task function
 const deleteTask = async (subdirectory, id) => {
   await fetch(url + `${subdirectory}/${id}`, {
@@ -154,7 +152,7 @@ const editTask = async (id, data) => {
 toDoApp.addEventListener("click", async (e) => {
   const taskId = e.target.parentElement.dataset.id; // getting id from data- attribute
 
-  const taskTitle =
+  const taskTitleElement =
     e.target.parentElement.parentElement.querySelector(".task-title"); // getting task title from the list items child
 
   // Delete single to-do task event
@@ -171,6 +169,7 @@ toDoApp.addEventListener("click", async (e) => {
   function deleteSingleTaskModalActions(subdirectory) {
     deleteModal.style.display = "flex";
     deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
+
     // Delete single button event
     deleteButton.addEventListener("click", async () => {
       await deleteTask(subdirectory, taskId);
@@ -207,24 +206,6 @@ toDoApp.addEventListener("click", async (e) => {
     cancelDeleteButton.addEventListener("click", () => {
       deleteModal.style.display = "none";
     });
-  }
-  // _________________________________________________________
-  // Mark task as done
-  if (e.target.classList.contains("mark-as-done")) {
-    const taskData = {
-      title: taskTitle.innerHTML,
-    };
-    await createTask(doneSubdirectory, taskData);
-    await deleteTask(toDoSubdirectory, taskId);
-  }
-
-  // Mark task as undone
-  if (e.target.classList.contains("mark-as-undone")) {
-    const taskData = {
-      title: taskTitle.innerHTML,
-    };
-    await createTask(toDoSubdirectory, taskData);
-    await deleteTask(doneSubdirectory, taskId);
   }
   // _________________________________________________________
   // Edit task
@@ -270,6 +251,24 @@ toDoApp.addEventListener("click", async (e) => {
       }
     });
   }
+  // _________________________________________________________
+  // Mark task as done
+  if (e.target.classList.contains("mark-as-done")) {
+    const taskData = {
+      title: taskTitleElement.innerHTML,
+    };
+    await createTask(doneSubdirectory, taskData);
+    await deleteTask(toDoSubdirectory, taskId);
+  }
+
+  // Mark task as undone
+  if (e.target.classList.contains("mark-as-undone")) {
+    const taskData = {
+      title: taskTitleElement.innerHTML,
+    };
+    await createTask(toDoSubdirectory, taskData);
+    await deleteTask(doneSubdirectory, taskId);
+  }
 });
 // _________________________________________________________
 // Icons hover behavior
@@ -291,7 +290,7 @@ const resetInput = () => {
   taskInput.focus();
 };
 // _________________________________________________________
-// Show validation alert function
+// Show/hide validation alert function
 function showAlert() {
   alertModal.innerHTML =
     "<i class='bx bxs-error' ></i><span>Please enter a task title.</span>";
@@ -306,7 +305,7 @@ function showAlert() {
   }, 3000);
 }
 // _________________________________________________________
-// default list of tasks for to put show 'no task' message and 'delete all' button if needed
+// Show/hide 'no task' message and 'delete all' button if required
 const listChecker = () => {
   const toDoChildren = toDoList.children.length;
   const doneChildren = doneTasksList.children.length;
@@ -329,7 +328,7 @@ const listChecker = () => {
     renderNoTaskMessage("done", doneListWrapper);
   }
 
-  // Show / hide delete all tasks button
+  // Show/hide delete all tasks button
   if (toDoChildren > 1) {
     deleteAllIToDoButton.style.display = "block";
   } else {

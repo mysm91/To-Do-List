@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sane TO-DO app</title>
+    <title>TO-DO app</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,7 +29,7 @@
   </head>
 
   <body>
-    <div class="container d-flex align-center">
+    <div class="container d-flex align-center flex-column">
       <h1 class="app-header">Swift To-Do App</h1>
       <form class="input-item-wrapper">
         <input
@@ -50,7 +50,7 @@
             </button>
           </div>
           <div class="todo-list-wrapper">
-            <ul class="todo-list d-flex"></ul>
+            <ul class="todo-list d-flex flex-column"></ul>
           </div>
         </div>
 
@@ -63,14 +63,14 @@
             </button>
           </div>
           <div class="done-list-wrapper">
-            <ul class="done-list d-flex"></ul>
+            <ul class="done-list d-flex flex-column"></ul>
           </div>
         </div>
       </div>
 
       <!-- Edit modal -->
       <div class="edit-modal align-center justify-center">
-        <form class="edit-task-wrapper d-flex align-center">
+        <form class="edit-task-wrapper d-flex align-center flex-column">
           <h2 class="edit-modal-header">Edit task</h2>
           <input
             type="text"
@@ -87,7 +87,7 @@
 
       <!-- Delete modal -->
       <div class="delete-modal align-center justify-center">
-        <div class="delete-task-wrapper d-flex align-center">
+        <div class="delete-task-wrapper d-flex align-center flex-column">
           <h2 class="delete-modal-header">Delete task</h2>
           <p class="delete-modal-message"></p>
           <div class="delete-button-wrapper d-flex justify-center">
