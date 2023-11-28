@@ -10,6 +10,7 @@ const taskEdit = document.getElementById("edit-task-input");
 const deleteAllIToDoButton = document.querySelector(".delete-all-todo-tasks");
 const deleteAllDoneButton = document.querySelector(".delete-all-done-tasks");
 const editButton = document.querySelector(".submit-edit-button");
+const editButtonSibling = document.querySelector(".edit-button-sibling");
 const cancelEditButton = document.querySelector(".cancel-edit-button");
 const deleteButton = document.querySelector(".delete-button");
 const cancelDeleteButton = document.querySelector(".cancel-delete-button");
@@ -112,7 +113,7 @@ inputForm.addEventListener("submit", async (e) => {
 
   // Task input validation
   if (!taskTitle) {
-    showAlert();
+    showAlert("Please enter a task title.");
     resetInput();
   } else {
     await createTask(toDoSubdirectory, taskData);
@@ -207,6 +208,10 @@ toDoApp.addEventListener("click", async (e) => {
       deleteModal.style.display = "none";
     });
   }
+  // Close delete modal if user clicked outside of modal area
+  if (e.target.classList.contains("delete-modal")) {
+    deleteModal.style.display = "none";
+  }
   // _________________________________________________________
   // Edit task
   if (e.target.classList.contains("edit-task")) {
@@ -214,6 +219,31 @@ toDoApp.addEventListener("click", async (e) => {
     editModal.style.display = "flex";
     taskEdit.focus();
     // editButton.setAttribute("data-edit-id", taskId); //???
+
+    // Disable edit button if edit input is unchanged
+    const disableEditButton = () => {
+      if (taskTitleElement.innerHTML === taskEdit.value.trim()) {
+        editButton.setAttribute("disabled", true);
+        editButtonSibling.style.cursor = "not-allowed";
+        editButtonSibling.style.display = "block";
+        editModal.addEventListener("click", (e) => {
+          if (e.target.classList.contains("edit-button-sibling")) {
+            taskEdit.focus();
+            showAlert("The new task title must differ from previous one.");
+          }
+        });
+      } else {
+        editButton.removeAttribute("disabled");
+        editButton.style.cursor = "pointer";
+        editButtonSibling.style.display = "none";
+      }
+    };
+
+    disableEditButton();
+
+    taskEdit.addEventListener("keyup", () => {
+      disableEditButton();
+    });
 
     // Edit task event
     editForm.addEventListener("submit", async (e) => {
@@ -224,7 +254,7 @@ toDoApp.addEventListener("click", async (e) => {
 
       // Edit task validation
       if (!editedTaskTitle) {
-        showAlert();
+        showAlert("Please enter a task title.");
         await getToDoTask(taskId);
         taskEdit.focus();
       } else {
@@ -250,6 +280,10 @@ toDoApp.addEventListener("click", async (e) => {
         editModal.style.display = "none";
       }
     });
+  }
+  // Close edit modal if user clicked outside of modal area
+  if (e.target.classList.contains("edit-modal")) {
+    editModal.style.display = "none";
   }
   // _________________________________________________________
   // Mark task as done
@@ -291,9 +325,8 @@ const resetInput = () => {
 };
 // _________________________________________________________
 // Show/hide validation alert function
-function showAlert() {
-  alertModal.innerHTML =
-    "<i class='bx bxs-error' ></i><span>Please enter a task title.</span>";
+function showAlert(message) {
+  alertModal.innerHTML = `<i class='bx bxs-error' ></i><span>${message}</span>`;
   alertModal.style.visibility = "visible";
   alertModal.style.opacity = "1";
   alertModal.style.transform = "translateY(-140%)";
