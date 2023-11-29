@@ -90,6 +90,14 @@ const getToDoTask = async (id) => {
   const task = await response.json();
   taskEdit.value = task.title;
 };
+
+// const refreshProblem = async () => {
+//   toDoList.innerHTML = "";
+//   doneTasksList.innerHTML = "";
+//   await getTasks(toDoSubdirectory);
+//   await getTasks(doneSubdirectory);
+//   listChecker();
+// };
 // __________________________________________________________
 // CREATE AND MARK AS DONE TASK ITEMS
 // Create task / mark task as done function
@@ -118,6 +126,7 @@ inputForm.addEventListener("submit", async (e) => {
   } else {
     await createTask(toDoSubdirectory, taskData);
     resetInput();
+    // refreshProblem();
   }
 });
 // __________________________________________________________
@@ -168,17 +177,17 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete single task modal function
   function deleteSingleTaskModalActions(subdirectory) {
-    deleteModal.style.display = "flex";
+    changeElementDisplay(deleteModal, "flex");
     deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
 
     // Delete single button event
     deleteButton.addEventListener("click", async () => {
       await deleteTask(subdirectory, taskId);
-      deleteModal.style.display = "none";
+      changeElementDisplay(deleteModal, "none");
     });
     // Cancel button event
     cancelDeleteButton.addEventListener("click", () => {
-      deleteModal.style.display = "none";
+      changeElementDisplay(deleteModal, "none");
     });
   }
 
@@ -194,29 +203,32 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete all tasks modal function
   function deleteAllTasksModalActions(taskType, subdirectory) {
-    deleteModal.style.display = "flex";
+    changeElementDisplay(deleteModal, "flex");
+
     deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
 
     // Delete all button event
     deleteButton.addEventListener("click", async () => {
       await deleteAllTasks(subdirectory);
-      deleteModal.style.display = "none";
+      changeElementDisplay(deleteModal, "none");
     });
 
     // Cancel button event
     cancelDeleteButton.addEventListener("click", () => {
-      deleteModal.style.display = "none";
+      changeElementDisplay(deleteModal, "none");
     });
   }
+
   // Close delete modal if user clicked outside of modal area
   if (e.target.classList.contains("delete-modal")) {
-    deleteModal.style.display = "none";
+    changeElementDisplay(deleteModal, "none");
   }
   // _________________________________________________________
   // Edit task
   if (e.target.classList.contains("edit-task")) {
     await getToDoTask(taskId);
-    editModal.style.display = "flex";
+    changeElementDisplay(editModal, "flex");
+
     taskEdit.focus();
     // editButton.setAttribute("data-edit-id", taskId); //???
 
@@ -225,7 +237,7 @@ toDoApp.addEventListener("click", async (e) => {
       if (taskTitleElement.innerHTML === taskEdit.value.trim()) {
         editButton.setAttribute("disabled", true);
         editButtonSibling.style.cursor = "not-allowed";
-        editButtonSibling.style.display = "block";
+        changeElementDisplay(editButtonSibling, "block");
         editModal.addEventListener("click", (e) => {
           if (e.target.classList.contains("edit-button-sibling")) {
             taskEdit.focus();
@@ -235,7 +247,7 @@ toDoApp.addEventListener("click", async (e) => {
       } else {
         editButton.removeAttribute("disabled");
         editButton.style.cursor = "pointer";
-        editButtonSibling.style.display = "none";
+        changeElementDisplay(editButtonSibling, "none");
       }
     };
 
@@ -263,27 +275,27 @@ toDoApp.addEventListener("click", async (e) => {
           title: editedTaskTitle,
         };
         await editTask(taskId, taskData);
-        editModal.style.display = "none";
+        changeElementDisplay(editModal, "none");
       }
     });
 
     // Canceling edit task events
     // Cancel button
     cancelEditButton.addEventListener("click", () => {
-      editModal.style.display = "none";
+      changeElementDisplay(editModal, "none");
     });
 
     // Escape key press
     editModal.addEventListener("keydown", (e) => {
       const pressedKey = e.key;
       if (pressedKey === "Escape") {
-        editModal.style.display = "none";
+        changeElementDisplay(editModal, "none");
       }
     });
   }
   // Close edit modal if user clicked outside of modal area
   if (e.target.classList.contains("edit-modal")) {
-    editModal.style.display = "none";
+    changeElementDisplay(editModal, "none");
   }
   // _________________________________________________________
   // Mark task as done
@@ -305,7 +317,7 @@ toDoApp.addEventListener("click", async (e) => {
   }
 });
 // _________________________________________________________
-// Icons hover behavior
+// Icon's hover behavior
 toDoApp.addEventListener("mouseover", (e) => {
   if (e.target.classList.contains("bx")) {
     e.target.classList.add("bx-tada");
@@ -339,40 +351,53 @@ function showAlert(message) {
 }
 // _________________________________________________________
 // Show/hide 'no task' message and 'delete all' button if required
-const listChecker = () => {
+function listChecker() {
   const toDoChildren = toDoList.children.length;
   const doneChildren = doneTasksList.children.length;
 
-  // Create "no task" message function
-  const renderNoTaskMessage = (taskType, listType) => {
-    const createNoTaskElement = document.createElement("i");
-    const noTaskMessage = `You do not have any ${taskType} tasks at the moment`;
-    createNoTaskElement.innerHTML = noTaskMessage;
-    createNoTaskElement.classList.add("no-task");
-    listType.prepend(createNoTaskElement);
-  };
+  // Show/hide delete all tasks button
+  if (toDoChildren > 1) {
+    changeElementDisplay(deleteAllIToDoButton, "block");
+  } else {
+    changeElementDisplay(deleteAllIToDoButton, "none");
+  }
+  if (doneChildren > 1) {
+    changeElementDisplay(deleteAllDoneButton, "block");
+  } else {
+    changeElementDisplay(deleteAllDoneButton, "none");
+  }
 
   // Show/hide "no task" message
   if (toDoChildren < 1) {
     renderNoTaskMessage("to-do", toDoListWrapper);
+  } else {
+    if (document.querySelector(".to-do")) {
+      document.querySelector(".to-do").remove();
+    }
   }
 
   if (doneChildren < 1) {
     renderNoTaskMessage("done", doneListWrapper);
+  } else {
+    if (document.querySelector(".done")) {
+      document.querySelector(".done").remove();
+    }
   }
+}
 
-  // Show/hide delete all tasks button
-  if (toDoChildren > 1) {
-    deleteAllIToDoButton.style.display = "block";
-  } else {
-    deleteAllIToDoButton.style.display = "none";
-  }
-  if (doneChildren > 1) {
-    deleteAllDoneButton.style.display = "block";
-  } else {
-    deleteAllDoneButton.style.display = "none";
-  }
-};
+// Create "no task" message function
+function renderNoTaskMessage(taskType, listType) {
+  const createNoTaskElement = document.createElement("i");
+  const noTaskMessage = `You do not have any ${taskType} tasks at the moment`;
+  createNoTaskElement.innerHTML = noTaskMessage;
+  createNoTaskElement.classList.add("no-task", taskType);
+  listType.prepend(createNoTaskElement);
+}
+// _________________________________________________________
+// Change elements display value
+function changeElementDisplay(element, displayValue) {
+  element.style.display = displayValue;
+}
 // _________________________________________________________
 // Loading tasks as the page loads or a response is received
 (async function initializeTasks() {
