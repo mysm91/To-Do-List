@@ -21,7 +21,7 @@ const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 
 /// API URL ///
-const url = `http://localhost:5500`;
+const url = `http://localhost:3009`;
 const toDoSubdirectory = "/toDoItems";
 const doneSubdirectory = "/doneItems";
 
@@ -29,12 +29,20 @@ const doneSubdirectory = "/doneItems";
 /// GET TASK ITEMS ///
 // Get tasks from the API
 const getTasks = async (subdirectory) => {
-  const response = await fetch(url + subdirectory);
-  const tasks = await response.json();
+  try {
+    const response = await fetch(url + subdirectory);
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
+    const tasks = await response.json();
 
-  subdirectory === toDoSubdirectory
-    ? renderToDoTasks(tasks)
-    : renderDoneTasks(tasks);
+    subdirectory === toDoSubdirectory
+      ? renderToDoTasks(tasks)
+      : renderDoneTasks(tasks);
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
+  }
 };
 
 // Render to-do tasks
@@ -72,22 +80,35 @@ const renderDoneTasks = (tasks) => {
 
 // Get a single to-do task from the API for Edit operation
 const getToDoTask = async (id) => {
-  const response = await fetch(url + `${toDoSubdirectory}/${id}`);
-  const task = await response.json();
+  try {
+    const response = await fetch(url + `${toDoSubdirectory}/${id}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch the to-do task");
+    }
+    const task = await response.json();
 
-  taskEdit.value = task.title;
+    taskEdit.value = task.title;
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
+  }
 };
 
 /// CREATE AND MARK AS DONE TASK ITEMS ///
 // Create new task/mark task as done function
 const createTask = async (subdirectory, task) => {
-  await fetch(url + subdirectory, {
-    method: "POST",
-    body: JSON.stringify(task),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    await fetch(url + subdirectory, {
+      method: "POST",
+      body: JSON.stringify(task),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
+  }
 };
 
 // Create task event
@@ -113,30 +134,48 @@ inputForm.addEventListener("submit", async (e) => {
 /// DELETE, EDIT, AND DONE/UNDONE TASK ITEMS ///
 // Delete single task function
 const deleteTask = async (subdirectory, id) => {
-  await fetch(url + `${subdirectory}/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    await fetch(url + `${subdirectory}/${id}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
+  }
 };
 
 // Delete all tasks function
 const deleteAllTasks = async (subdirectory) => {
-  const response = await fetch(url + subdirectory);
-  const tasks = await response.json();
+  try {
+    const response = await fetch(url + subdirectory);
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
+    const tasks = await response.json();
 
-  for (let task of tasks) {
-    await deleteTask(subdirectory, task.id);
+    for (let task of tasks) {
+      await deleteTask(subdirectory, task.id);
+    }
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
   }
 };
 
 // Edit task function
 const editTask = async (id, data) => {
-  await fetch(url + `${toDoSubdirectory}/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    await fetch(url + `${toDoSubdirectory}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log("Server is disconnected. Please restart JSON Server.", error);
+    showAlert("Server is disconnected. Please restart JSON Server.");
+  }
 };
 
 /// Delete, edit, and done/undone task event
