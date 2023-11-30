@@ -1,9 +1,4 @@
 {
-  "toDoItems": [
-    {
-      "title": "21211",
-      "id": 1
-    }
-  ],
+  "toDoItems": [],
   "doneItems": []
 }

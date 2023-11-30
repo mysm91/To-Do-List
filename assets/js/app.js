@@ -34,6 +34,7 @@ const getTasks = async (subdirectory) => {
     if (!response.ok) {
       throw new Error("Failed to fetch tasks");
     }
+
     const tasks = await response.json();
 
     subdirectory === toDoSubdirectory
@@ -96,7 +97,7 @@ const getToDoTask = async (id) => {
 
 /// CREATE AND MARK AS DONE TASK ITEMS ///
 // Create new task/mark task as done function
-const createTask = async (subdirectory, task) => {
+const createTask = async (subdirectory, task, list) => {
   try {
     await fetch(url + subdirectory, {
       method: "POST",
@@ -105,6 +106,10 @@ const createTask = async (subdirectory, task) => {
         "Content-Type": "application/json",
       },
     });
+
+    list.innerHTML = "";
+    await getTasks(subdirectory);
+    listChecker();
   } catch (error) {
     console.log("Server is disconnected. Please restart JSON Server.", error);
     showAlert("Server is disconnected. Please restart JSON Server.");
@@ -126,18 +131,22 @@ inputForm.addEventListener("submit", async (e) => {
     showAlert("Please enter a task title.");
     resetInput();
   } else {
-    await createTask(toDoSubdirectory, taskData);
+    await createTask(toDoSubdirectory, taskData, toDoList);
     resetInput();
   }
 });
 
 /// DELETE, EDIT, AND DONE/UNDONE TASK ITEMS ///
 // Delete single task function
-const deleteTask = async (subdirectory, id) => {
+const deleteTask = async (subdirectory, id, list) => {
   try {
     await fetch(url + `${subdirectory}/${id}`, {
       method: "DELETE",
     });
+
+    list.innerHTML = "";
+    await getTasks(subdirectory);
+    listChecker();
   } catch (error) {
     console.log("Server is disconnected. Please restart JSON Server.", error);
     showAlert("Server is disconnected. Please restart JSON Server.");
@@ -145,7 +154,7 @@ const deleteTask = async (subdirectory, id) => {
 };
 
 // Delete all tasks function
-const deleteAllTasks = async (subdirectory) => {
+const deleteAllTasks = async (subdirectory, list) => {
   try {
     const response = await fetch(url + subdirectory);
     if (!response.ok) {
@@ -154,8 +163,14 @@ const deleteAllTasks = async (subdirectory) => {
     const tasks = await response.json();
 
     for (let task of tasks) {
-      await deleteTask(subdirectory, task.id);
+      await fetch(url + `${subdirectory}/${task.id}`, {
+        method: "DELETE",
+      });
     }
+
+    list.innerHTML = "";
+    await getTasks(subdirectory);
+    listChecker();
   } catch (error) {
     console.log("Server is disconnected. Please restart JSON Server.", error);
     showAlert("Server is disconnected. Please restart JSON Server.");
@@ -172,6 +187,9 @@ const editTask = async (id, data) => {
         "Content-Type": "application/json",
       },
     });
+    toDoList.innerHTML = "";
+    await getTasks(toDoSubdirectory);
+    listChecker();
   } catch (error) {
     console.log("Server is disconnected. Please restart JSON Server.", error);
     showAlert("Server is disconnected. Please restart JSON Server.");
@@ -188,23 +206,23 @@ toDoApp.addEventListener("click", async (e) => {
   /// Delete task/tasks ///
   // Delete a single to-do task event
   if (e.target.classList.contains("delete-todo-task")) {
-    deleteSingleTaskModalActions(toDoSubdirectory);
+    deleteSingleTaskModalActions(toDoSubdirectory, toDoList);
   }
 
   // Delete a single done task event
   if (e.target.classList.contains("delete-done-task")) {
-    deleteSingleTaskModalActions(doneSubdirectory);
+    deleteSingleTaskModalActions(doneSubdirectory, doneTasksList);
   }
 
   // Delete single task modal function
-  function deleteSingleTaskModalActions(subdirectory) {
+  function deleteSingleTaskModalActions(subdirectory, list) {
     changeElementDisplay(deleteModal, "flex");
 
     deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
 
     // Delete task button event
     deleteButton.addEventListener("click", async () => {
-      await deleteTask(subdirectory, taskId);
+      await deleteTask(subdirectory, taskId, list);
       changeElementDisplay(deleteModal, "none");
       resetInput();
     });
@@ -218,23 +236,23 @@ toDoApp.addEventListener("click", async (e) => {
 
   // Delete all to-do tasks event
   if (e.target.classList.contains("delete-all-todo-tasks")) {
-    deleteAllTasksModalActions("to-do", toDoSubdirectory);
+    deleteAllTasksModalActions("to-do", toDoSubdirectory, toDoList);
   }
 
   // Delete all done tasks event
   if (e.target.classList.contains("delete-all-done-tasks")) {
-    deleteAllTasksModalActions("done", doneSubdirectory);
+    deleteAllTasksModalActions("done", doneSubdirectory, doneTasksList);
   }
 
   // Delete all tasks modal function
-  function deleteAllTasksModalActions(taskType, subdirectory) {
+  function deleteAllTasksModalActions(taskType, subdirectory, list) {
     changeElementDisplay(deleteModal, "flex");
 
     deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
 
     // Delete all tasks button event
     deleteButton.addEventListener("click", async () => {
-      await deleteAllTasks(subdirectory);
+      await deleteAllTasks(subdirectory, list);
 
       changeElementDisplay(deleteModal, "none");
       resetInput();
@@ -345,8 +363,8 @@ toDoApp.addEventListener("click", async (e) => {
       title: taskTitleElement.innerHTML,
     };
 
-    await createTask(doneSubdirectory, taskData);
-    await deleteTask(toDoSubdirectory, taskId);
+    await createTask(doneSubdirectory, taskData, doneTasksList);
+    await deleteTask(toDoSubdirectory, taskId, toDoList);
     resetInput();
   }
 
@@ -356,8 +374,8 @@ toDoApp.addEventListener("click", async (e) => {
       title: taskTitleElement.innerHTML,
     };
 
-    await createTask(toDoSubdirectory, taskData);
-    await deleteTask(doneSubdirectory, taskId);
+    await createTask(toDoSubdirectory, taskData, toDoList);
+    await deleteTask(doneSubdirectory, taskId, doneTasksList);
     resetInput();
   }
 });
@@ -434,21 +452,31 @@ function listChecker() {
 
 // Create "no task" message function
 function renderNoTaskMessage(taskType, listType) {
-  const createNoTaskElement = document.createElement("i");
+  if (listType.children.length < 2) {
+    const createNoTaskElement = document.createElement("i");
 
-  const noTaskMessage = `You do not have any ${taskType} tasks at the moment`;
+    const noTaskMessage = `You do not have any ${taskType} tasks at the moment`;
 
-  createNoTaskElement.innerHTML = noTaskMessage;
+    createNoTaskElement.innerHTML = noTaskMessage;
 
-  createNoTaskElement.classList.add("no-task", taskType);
+    createNoTaskElement.classList.add("no-task", taskType);
 
-  listType.prepend(createNoTaskElement);
+    listType.prepend(createNoTaskElement);
+  }
 }
 
 /// Change elements display value ///
 function changeElementDisplay(element, displayValue) {
   element.style.display = displayValue;
 }
+
+// async function updateList() {
+//   toDoList.innerHTML = "";
+//   doneTasksList.innerHTML = "";
+//   await getTasks(toDoSubdirectory);
+//   await getTasks(doneSubdirectory);
+//   listChecker();
+// }
 
 /// Loading tasks list as the page loads ///
 (async function initializeTasks() {
