@@ -21,7 +21,7 @@ const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 
 /// API URL ///
-const url = `http://localhost:3009`;
+const url = `http://localhost:5500`;
 const toDoSubdirectory = "/toDoItems";
 const doneSubdirectory = "/doneItems";
 
@@ -43,7 +43,7 @@ const renderToDoTasks = (tasks) => {
     const { id, title } = task;
 
     toDoList.innerHTML += `
-                          <li class="todo-item d-flex align-center">
+                          <li class="todo-item d-flex .justify-between align-center">
                             <span class="task-title">${title}</span>
                             <div class="icon-wrapper d-flex" data-id="${id}">
                               <i class="bx bx-edit edit-task" title="Edit task"></i>
@@ -60,7 +60,7 @@ const renderDoneTasks = (tasks) => {
     const { id, title } = task;
 
     doneTasksList.innerHTML += `
-                               <li class="done-item d-flex align-center">
+                               <li class="done-item d-flex .justify-between align-center">
                                 <span class="task-title">${title}</span>
                                 <div class="icon-wrapper d-flex" data-id="${id}">
                                   <i class="bx bx-undo mark-as-undone" title="Mark as undone"></i>

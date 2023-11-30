@@ -59,12 +59,17 @@ li {
   justify-content: center;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 .flex-column {
   flex-direction: column;
 }
 
 /* to-do app */
 .container {
+  width: 100%;
   min-height: 100vh;
   justify-content: flex-start;
   padding-top: 10px;
@@ -91,7 +96,9 @@ li {
 }
 
 .input-item-wrapper {
-  width: 40%;
+  display: flex;
+  justify-content: space-around;
+  width: 50%;
   padding: 16px 12px;
   border-radius: var(--primary-border-radius);
   backdrop-filter: blur(2px);
@@ -105,7 +112,7 @@ li {
 #task-input,
 #edit-task-input {
   font-family: var(--primary-font);
-  width: 80%;
+  width: 75%;
   height: 30px;
   padding: 10px;
   outline: 0;
@@ -152,8 +159,12 @@ li {
 
 #task-submit {
   width: 80px;
-  margin-left: 15px;
+  /* margin-left: 15px; */
   transition-property: color, background-color, box-shadow;
+}
+
+.tasks-container {
+  width: 80%;
 }
 
 .delete-all-tasks {
@@ -191,7 +202,7 @@ li {
 
 .tasks-container {
   align-items: flex-start;
-  gap: 100px;
+  gap: 8%;
 }
 
 .todo-section-wrapper,
@@ -260,7 +271,7 @@ li {
 .todo-list-wrapper,
 .done-list-wrapper {
   width: 95%;
-  max-height: calc(100vh - 270px);
+  max-height: calc(100vh - 269px);
   overflow: auto;
   margin: 10px auto;
 }
@@ -294,11 +305,11 @@ li {
 }
 
 .todo-item > .task-title {
-  width: 287px;
+  min-width: 73%;
 }
 
 .done-item > .task-title {
-  width: 320px;
+  min-width: 82%;
 }
 
 .edit-task,
@@ -379,6 +390,7 @@ li {
 
 #edit-task-input {
   width: 90%;
+  margin: 0 auto;
 }
 
 #edit-task-input:focus {
@@ -428,6 +440,7 @@ li {
 }
 
 .delete-modal-message {
+  text-align: center;
   font-size: 20px;
 }
 
@@ -455,6 +468,10 @@ li {
 .bxs-error {
   color: #f6db04;
   font-size: 22px;
+}
+
+.alert-modal span {
+  text-align: center;
 }
 
 /* Scroll bar style */
@@ -486,35 +503,139 @@ li {
 }
 
 /* Responsive design */
-@media (max-width: 500px) {
-  .container {
-    gap: 22px;
+/* Desktops and large screens*/
+@media (max-width: 1200px) {
+  .app-header {
+    font-size: 40px;
   }
 
+  .input-item-wrapper {
+    width: 60%;
+  }
+
+  .tasks-container {
+    width: 85%;
+    gap: 4%;
+  }
+
+  .todo-list-wrapper,
+  .done-list-wrapper {
+    max-height: calc(100vh - 256px);
+  }
+}
+
+/* Laptops and Small screens*/
+@media (max-width: 1024px) {
   .app-header {
     font-size: 35px;
   }
 
   .input-item-wrapper {
-    width: 92%;
+    width: 75%;
   }
 
-  #task-submit {
-    width: 70px;
-    margin-left: 8px;
+  .tasks-container {
+    width: 95%;
+    gap: 3%;
+  }
+
+  .todo-item > .task-title {
+    min-width: 69%;
+  }
+
+  .done-item > .task-title {
+    min-width: 79%;
+  }
+
+  .edit-task,
+  .mark-as-done,
+  .delete-task,
+  .mark-as-undone {
+    padding: 12px 3px;
+  }
+}
+
+/* iPads, Tablets*/
+@media (max-width: 768px) {
+  .input-item-wrapper,
+  .tasks-container,
+  .edit-task-wrapper,
+  .delete-task-wrapper,
+  .alert-modal {
+    width: 90%;
   }
 
   .tasks-container {
     flex-direction: column;
+    align-items: center;
     gap: 22px;
+  }
+
+  .todo-item > .task-title {
+    min-width: 72%;
+  }
+
+  .done-item > .task-title {
+    min-width: 82%;
   }
 
   .done-tasks-section-wrapper {
     margin-bottom: 10px;
   }
 
-  .todo-list-wrapper,
-  .done-list-wrapper {
-    max-height: 360px;
+  .todo-section-wrapper,
+  .done-tasks-section-wrapper {
+    width: 100%;
+  }
+
+  .edit-task,
+  .mark-as-done,
+  .delete-task,
+  .mark-as-undone {
+    padding: 12px 5px;
+  }
+}
+
+/* Mobile*/
+@media (max-width: 480px) {
+  .app-header {
+    font-size: 32px;
+  }
+
+  .input-item-wrapper,
+  .tasks-container,
+  .edit-task-wrapper,
+  .delete-task-wrapper,
+  .alert-modal {
+    width: 95%;
+  }
+
+  #task-input,
+  #edit-task-input {
+    width: 70%;
+  }
+
+  .todo-item > .task-title {
+    min-width: 60%;
+  }
+
+  .done-item > .task-title {
+    min-width: 72%;
+  }
+
+  .delete-modal-message {
+    font-size: 18px;
+  }
+
+  .delete-all-tasks {
+    padding: 0 6px;
+  }
+
+  .alert-modal span {
+    max-width: 75%;
+  }
+
+  .no-task {
+    font-size: 15px;
   }
 }
