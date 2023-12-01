@@ -21,7 +21,7 @@ const toDoList = document.querySelector(".todo-list");
 const doneTasksList = document.querySelector(".done-list");
 
 /// API URL ///
-const url = `http://localhost:3009`;
+const url = `http://localhost:3000`;
 const toDoSubdirectory = "/toDoItems";
 const doneSubdirectory = "/doneItems";
 
@@ -31,9 +31,6 @@ const doneSubdirectory = "/doneItems";
 const getTasks = async (subdirectory) => {
   try {
     const response = await fetch(url + subdirectory);
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks");
-    }
 
     const tasks = await response.json();
 
@@ -41,8 +38,8 @@ const getTasks = async (subdirectory) => {
       ? renderToDoTasks(tasks)
       : renderDoneTasks(tasks);
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
@@ -83,20 +80,18 @@ const renderDoneTasks = (tasks) => {
 const getToDoTask = async (id) => {
   try {
     const response = await fetch(url + `${toDoSubdirectory}/${id}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch the to-do task");
-    }
+
     const task = await response.json();
 
     taskEdit.value = task.title;
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
-/// CREATE AND MARK AS DONE TASK ITEMS ///
-// Create new task/mark task as done function
+/// CREATE TASK ITEMS ///
+// Create new task function
 const createTask = async (subdirectory, task, list) => {
   try {
     await fetch(url + subdirectory, {
@@ -107,12 +102,10 @@ const createTask = async (subdirectory, task, list) => {
       },
     });
 
-    list.innerHTML = "";
-    await getTasks(subdirectory);
-    listChecker();
+    await updateList(list, subdirectory);
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
@@ -144,12 +137,10 @@ const deleteTask = async (subdirectory, id, list) => {
       method: "DELETE",
     });
 
-    list.innerHTML = "";
-    await getTasks(subdirectory);
-    listChecker();
+    await updateList(list, subdirectory);
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
@@ -157,9 +148,7 @@ const deleteTask = async (subdirectory, id, list) => {
 const deleteAllTasks = async (subdirectory, list) => {
   try {
     const response = await fetch(url + subdirectory);
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks");
-    }
+
     const tasks = await response.json();
 
     for (let task of tasks) {
@@ -168,12 +157,10 @@ const deleteAllTasks = async (subdirectory, list) => {
       });
     }
 
-    list.innerHTML = "";
-    await getTasks(subdirectory);
-    listChecker();
+    await updateList(list, subdirectory);
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
@@ -187,23 +174,22 @@ const editTask = async (id, data) => {
         "Content-Type": "application/json",
       },
     });
-    toDoList.innerHTML = "";
-    await getTasks(toDoSubdirectory);
-    listChecker();
+
+    await updateList(toDoList, toDoSubdirectory);
   } catch (error) {
-    console.log("Server is disconnected. Please restart JSON Server.", error);
-    showAlert("Server is disconnected. Please restart JSON Server.");
+    console.log(error);
+    showAlert("Server is unavailable. Please restart JSON Server.");
   }
 };
 
 /// Delete, edit, and done/undone task event
 toDoApp.addEventListener("click", async (e) => {
-  const taskId = e.target.parentElement.dataset.id; // getting id from data- attribute
-
+  var taskId = e.target.parentElement.dataset.id; // getting id from data- attribute
   const taskTitleElement =
     e.target.parentElement.parentElement.querySelector(".task-title"); // getting task title from the DOM
 
   /// Delete task/tasks ///
+  // Single delete
   // Delete a single to-do task event
   if (e.target.classList.contains("delete-todo-task")) {
     deleteSingleTaskModalActions(toDoSubdirectory, toDoList);
@@ -221,19 +207,31 @@ toDoApp.addEventListener("click", async (e) => {
     deleteModalMessage.innerHTML = "Are you sure to delete the selected task?";
 
     // Delete task button event
-    deleteButton.addEventListener("click", async () => {
+    async function deleteButtonClickHandler() {
       await deleteTask(subdirectory, taskId, list);
-      changeElementDisplay(deleteModal, "none");
-      resetInput();
-    });
+      closeDeleteModal();
+    }
 
     // Cancel button event
-    cancelDeleteButton.addEventListener("click", () => {
+    function cancelButtonClickHandler() {
+      closeDeleteModal();
+    }
+
+    // Close delete modal and remove event listeners
+    function closeDeleteModal() {
       changeElementDisplay(deleteModal, "none");
       resetInput();
-    });
+
+      deleteButton.removeEventListener("click", deleteButtonClickHandler);
+      cancelDeleteButton.removeEventListener("click", cancelButtonClickHandler);
+    }
+
+    // Add listener for delete events
+    deleteButton.addEventListener("click", deleteButtonClickHandler);
+    cancelDeleteButton.addEventListener("click", cancelButtonClickHandler);
   }
 
+  // Delete all
   // Delete all to-do tasks event
   if (e.target.classList.contains("delete-all-todo-tasks")) {
     deleteAllTasksModalActions("to-do", toDoSubdirectory, toDoList);
@@ -251,25 +249,38 @@ toDoApp.addEventListener("click", async (e) => {
     deleteModalMessage.innerHTML = `Are you sure to delete all ${taskType} tasks?`;
 
     // Delete all tasks button event
-    deleteButton.addEventListener("click", async () => {
-      await deleteAllTasks(subdirectory, list);
-
-      changeElementDisplay(deleteModal, "none");
-      resetInput();
-    });
+    function deleteAllTasksButtonClickHandler() {
+      deleteAllTasks(subdirectory, list);
+      closeDeleteModal();
+    }
 
     // Canceling delete task events
-    // 1) Cancel button
-    cancelDeleteButton.addEventListener("click", () => {
+    function cancelAllTasksButtonClickHandler() {
+      closeDeleteModal();
+    }
+
+    // Close delete modal and remove event listeners
+    function closeDeleteModal() {
       changeElementDisplay(deleteModal, "none");
       resetInput();
-    });
-  }
 
-  // 2) Close delete modal if user clicked outside of modal area
-  if (e.target.classList.contains("delete-modal")) {
-    changeElementDisplay(deleteModal, "none");
-    resetInput();
+      deleteButton.removeEventListener(
+        "click",
+        deleteAllTasksButtonClickHandler
+      );
+      cancelDeleteButton.removeEventListener(
+        "click",
+        cancelAllTasksButtonClickHandler
+      );
+    }
+
+    // Add listener for delete all tasks events
+    deleteButton.addEventListener("click", deleteAllTasksButtonClickHandler);
+
+    cancelDeleteButton.addEventListener(
+      "click",
+      cancelAllTasksButtonClickHandler
+    );
   }
 
   /// Edit task ///
@@ -277,7 +288,6 @@ toDoApp.addEventListener("click", async (e) => {
     await getToDoTask(taskId);
 
     changeElementDisplay(editModal, "flex");
-
     taskEdit.focus();
 
     // Disable edit button if edit input value is unchanged
@@ -310,7 +320,7 @@ toDoApp.addEventListener("click", async (e) => {
     });
 
     // Edit task event
-    editForm.addEventListener("submit", async (e) => {
+    async function editFormHandler(e) {
       e.preventDefault();
 
       const editedTaskTitle = taskEdit.value.trim(); // Getting data from the DOM
@@ -330,31 +340,40 @@ toDoApp.addEventListener("click", async (e) => {
 
         changeElementDisplay(editModal, "none");
         resetInput();
+        removeAllListeners();
       }
-    });
+    }
 
     // Canceling edit task events
-    // 1) Cancel button
-    cancelEditButton.addEventListener("click", () => {
+    // 1) Click cancel button
+    function cancelEditHandler() {
       changeElementDisplay(editModal, "none");
       resetInput();
-    });
+      removeAllListeners();
+    }
 
     // 2) Press escape key
-    editModal.addEventListener("keydown", (e) => {
+    function cancelEditWithEscapeHandler() {
       const pressedKey = e.key;
 
       if (pressedKey === "Escape") {
         changeElementDisplay(editModal, "none");
         resetInput();
+        removeAllListeners();
       }
-    });
-  }
+    }
 
-  // 3) Close edit modal if user clicked outside of modal area
-  if (e.target.classList.contains("edit-modal")) {
-    changeElementDisplay(editModal, "none");
-    resetInput();
+    // Remove all event listeners
+    function removeAllListeners() {
+      editForm.removeEventListener("submit", editFormHandler);
+      cancelEditButton.removeEventListener("click", cancelEditHandler);
+      editModal.removeEventListener("keydown", cancelEditWithEscapeHandler);
+    }
+
+    // Add listener for edit events
+    editForm.addEventListener("submit", editFormHandler);
+    cancelEditButton.addEventListener("click", cancelEditHandler);
+    editModal.addEventListener("keydown", cancelEditWithEscapeHandler);
   }
 
   /// Mark a task as done ///
@@ -436,16 +455,18 @@ function listChecker() {
   if (toDoChildren < 1) {
     renderNoTaskMessage("to-do", toDoListWrapper);
   } else {
-    if (document.querySelector(".to-do")) {
-      document.querySelector(".to-do").remove();
+    const noTaskMessage = document.querySelector(".to-do");
+    if (noTaskMessage) {
+      noTaskMessage.remove();
     }
   }
 
   if (doneChildren < 1) {
     renderNoTaskMessage("done", doneListWrapper);
   } else {
-    if (document.querySelector(".done")) {
-      document.querySelector(".done").remove();
+    const noTaskMessage = document.querySelector(".done");
+    if (noTaskMessage) {
+      noTaskMessage.remove();
     }
   }
 }
@@ -470,13 +491,11 @@ function changeElementDisplay(element, displayValue) {
   element.style.display = displayValue;
 }
 
-// async function updateList() {
-//   toDoList.innerHTML = "";
-//   doneTasksList.innerHTML = "";
-//   await getTasks(toDoSubdirectory);
-//   await getTasks(doneSubdirectory);
-//   listChecker();
-// }
+async function updateList(list, subdirectory) {
+  list.innerHTML = "";
+  await getTasks(subdirectory);
+  listChecker();
+}
 
 /// Loading tasks list as the page loads ///
 (async function initializeTasks() {
